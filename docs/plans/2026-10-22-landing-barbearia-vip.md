@@ -57,7 +57,7 @@ Influencer posta link  ──►  /i/<slug>  ──►  cookie bvip_ref + regist
 | Atribuição | **First-touch** por cookie `bvip_ref` (30 dias), gravado também em `?ref=` na URL e no lead | O primeiro influencer que trouxe a pessoa recebe o crédito; é a regra mais comum em campanhas de afiliados e evita disputas |
 | Link do influencer | `https://<dominio>/i/<slug>` (curto, memorável) que redireciona para `/?ref=<slug>&utm_source=<slug>&utm_medium=influencer` | Link curto para bio/stories; UTM preservado para GA4/Meta Pixel |
 | Identidade do lead | Telefone (WhatsApp) normalizado em E.164 é a chave de deduplicação local; email também é único porque a API exige | Barbearia agenda por WhatsApp; a API deles deduplica por email |
-| Unidade de preferência | O visitante escolhe uma das 29 unidades no formulário (obrigatório na API); o voucher **vale em qualquer unidade** | A unidade escolhida é referência de cadastro, não restrição. Restringir reduziria conversão e a queima já registra a unidade real |
+| Unidade de preferência | O visitante escolhe uma das 31 unidades (a confirmar: lista recebida tem 31, briefing dizia 29) no formulário (obrigatório na API); o voucher **vale em qualquer unidade** | A unidade escolhida é referência de cadastro, não restrição. Restringir reduziria conversão e a queima já registra a unidade real |
 | Formulário em 2 etapas | Etapa 1: nome, WhatsApp, unidade. Etapa 2: email, nascimento, consentimento | A API exige 6 campos; dividir mantém a primeira tela leve e permite medir abandono entre etapas |
 | Um voucher por pessoa | Índice único `Voucher.leadId`; telefone repetido devolve o voucher existente se ainda válido | Evita farm de vouchers |
 | Validade | `expiresAt = issuedAt + 7 × 24h` (UTC no banco, exibido em `America/Sao_Paulo`) | Simples e sem ambiguidade de fuso; se preferir "até 23:59 do 7º dia", é uma linha para ajustar |
@@ -384,7 +384,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Copiar o schema da seção 3
 - [ ] `src/lib/db.ts`: singleton do PrismaClient (padrão para dev com HMR)
 - [ ] `prisma/seed.ts`: upsert de 2 ou 3 influencers de exemplo por `slug`; upsert de 2 unidades de exemplo com `pinHash` gerado a partir de `SEED_UNIT_PIN` (default `123456` só em dev)
-- [ ] Script `npm run unit:import -- unidades.csv` para as **29 unidades reais**: lê o CSV exportado de `docs/templates/unidades.xlsx` (colunas `slug,unidade_id,nome,endereco,cidade,uf,whatsapp,horario,instagram`), valida que há 29 linhas com `unidade_id` numérico e único, gera um PIN aleatório de 6 dígitos por unidade (`crypto.randomInt`), grava só o hash e escreve `unidades-pins-<data>.csv` fora do repositório para distribuição às recepções. O arquivo de PINs deve ser apagado após a entrega
+- [ ] Script `npm run unit:import -- unidades.csv` para as **29 unidades reais**: lê `docs/data/unidades.csv` (colunas `slug,unidade_id,nome,endereco,cep,cidade,uf,telefone,tipo_telefone,horario,instagram,link_maps`), valida `unidade_id` numérico e único e slug único, e ignora linhas marcadas como inativas, gera um PIN aleatório de 6 dígitos por unidade (`crypto.randomInt`), grava só o hash e escreve `unidades-pins-<data>.csv` fora do repositório para distribuição às recepções. O arquivo de PINs deve ser apagado após a entrega
 - [ ] Script `npm run unit:rotate-pin -- --slug centro` para trocar o PIN de uma unidade (vazamento, troca de equipe); atualiza `pinRotatedAt`
 - [ ] `npx prisma migrate dev --name init` e `npm run db:seed`
 - [ ] Verificar: `npx prisma studio` mostra as tabelas e os influencers
@@ -666,7 +666,7 @@ Enquanto o material real não chega, a landing é construída sobre `docs/templa
 5. **Notificação**: enviar o voucher também por WhatsApp (API oficial ou Z-API/Twilio tem custo e exige template aprovado) ou basta a página + botão de compartilhar?
 6. **Conteúdo**: logo, fotos, endereço, horários, Instagram, CNPJ e texto da política de privacidade. Template em `docs/templates/conteudo.md`; placeholders em `assets/placeholders/` são usados pela landing até o material real chegar (seção "Conteúdo e placeholders" abaixo)
 7. **Domínio e hospedagem**: já existe domínio da Barbearia VIP para usar um subdomínio (ex. `promo.barbeariavip.com.br`)?
-8. ~~**Unidades**~~ **Resolvido:** são 29 unidades, um PIN de recepção por unidade. Template para preenchimento em `docs/templates/unidades.xlsx` (aba "Instruções" explica cada coluna); o `unit:import` lê o CSV exportado dessa planilha (`docs/templates/unidades.csv` tem o mesmo cabeçalho)
+8. ~~**Unidades**~~ **Dados recebidos em 22/10** em `docs/data/unidades.csv` e `.xlsx`: **31 linhas**, não 29. Pendências em `docs/data/README.md`: a `SC 401 - ANTIGA` (id 33) parece desativada; 4 unidades sem telefone; 9 sem CEP; 2 telefones de MG parecem celulares sem o 9º dígito; nenhuma com Instagram ou link do Maps. Confirmar quais das 31 participam
 9. **Consultas de elegibilidade** (parcialmente resolvido em 22/10):
    - ~~telefone com ou sem 55 / `versao`~~ **Resolvido:** sem o `55`, sem `versao`
    - ~~o que conta como venda~~ **Resolvido:** qualquer item em `historico` desqualifica; `pontuacoes` não entra
