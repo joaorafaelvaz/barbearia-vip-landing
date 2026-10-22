@@ -204,6 +204,51 @@ export const site = {
     metaTitle: "Você já é cliente | Barbearia VIP",
   },
 
+  voucher: {
+    metaTitle: "Seu voucher | Barbearia VIP",
+    eyebrow: "Voucher de desconto",
+    title: "Seu voucher está pronto",
+    greeting: "Olá, {name}! Apresente este QR na recepção da unidade.",
+    discount: "{percent}% de desconto",
+    validUntil: "Válido até {date}",
+    issuedAt: "Emitido em {date}",
+    states: {
+      ACTIVE: "Ativo",
+      EXPIRED: "Expirado",
+      USED: "Já utilizado",
+      CANCELLED: "Cancelado",
+    },
+    usedAt: "Usado em {date} na unidade {unit}",
+    expiredNote: "Este voucher venceu e não pode ser renovado. A promoção é válida por 7 dias a partir do cadastro.",
+    cancelledNote: "Este voucher foi cancelado. Em caso de dúvida, fale com a unidade.",
+    copy: "Copiar código",
+    copied: "Código copiado",
+    share: "Salvar no WhatsApp",
+    book: "Agendar agora",
+    bookHint: "Unidade de referência: {unit}",
+    rulesTitle: "Como usar",
+    rules: [
+      "Mostre o QR ou informe o código na recepção antes de pagar.",
+      "Uso único, em qualquer unidade participante.",
+      "Não cumulativo com outras promoções.",
+    ],
+    lostLink: "Perdeu o link? Recupere seu voucher aqui.",
+  },
+
+  meuVoucher: {
+    metaTitle: "Recuperar voucher | Barbearia VIP",
+    title: "Recuperar meu voucher",
+    text: "Informe o WhatsApp e a data de nascimento usados no cadastro.",
+    phoneLabel: "WhatsApp",
+    birthLabel: "Data de nascimento",
+    submit: "Buscar voucher",
+    notFound: "Não encontramos um voucher com esses dados. Confira o telefone e a data de nascimento, ou faça seu cadastro na página inicial.",
+    pending: "Seu cadastro ainda está em confirmação. Volte em alguns minutos: assim que confirmarmos, seu voucher aparece aqui.",
+    denied: "Este telefone já pertence a um cliente da Barbearia VIP. A promoção é exclusiva para a primeira visita.",
+    rateLimited: "Muitas tentativas. Aguarde alguns minutos e tente de novo.",
+    backHome: "Fazer meu cadastro",
+  },
+
   company: {
     legalName: "Barbearia VIP", // PENDENTE: razão social
     cnpj: "00.000.000/0001-00", // PENDENTE: CNPJ

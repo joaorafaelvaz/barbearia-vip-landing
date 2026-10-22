@@ -19,6 +19,7 @@
   --color-danger: #fca5a5;
   --color-danger-bg: rgba(248, 113, 113, 0.12);
   --color-success: #86efac;
+  --color-success-bg: rgba(134, 239, 172, 0.12);
 
   --radius-card: 1rem;
   --shadow-gold: 0 10px 30px -10px rgba(201, 162, 39, 0.45);
