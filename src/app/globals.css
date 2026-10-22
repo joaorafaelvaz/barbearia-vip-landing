@@ -1,26 +1,87 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Tokens visuais provisórios da campanha (ver src/content/site.ts → theme).
+ * Fundo #0B0B0C e dourado #C9A227 até a identidade visual real chegar.
+ */
+@theme {
+  --color-bg: #0b0b0c;
+  --color-surface: #141416;
+  --color-surface-2: #1c1c1f;
+  --color-line: #2a2a2e;
+  --color-line-strong: #3f3f46;
+  --color-fg: #f5f5f4;
+  --color-muted: #a1a1aa;
+  --color-gold: #c9a227;
+  --color-gold-strong: #e0b93a;
+  --color-gold-soft: rgba(201, 162, 39, 0.12);
+  --color-ink: #0b0b0c;
+  --color-danger: #fca5a5;
+  --color-danger-bg: rgba(248, 113, 113, 0.12);
+  --color-success: #86efac;
+
+  --radius-card: 1rem;
+  --shadow-gold: 0 10px 30px -10px rgba(201, 162, 39, 0.45);
 }
 
+/* Fontes vêm das variáveis do next/font (layout.tsx). Pilha do sistema como fallback. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  --font-display:
+    var(--font-bebas), "Bebas Neue", Impact, "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  /* Foco visível e consistente (teclado e leitores de tela). */
+  :focus-visible {
+    outline: 3px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
+  /* Evita zoom automático do iOS: nenhum campo com fonte menor que 16px. */
+  input,
+  select,
+  textarea,
+  button {
+    font-size: max(1rem, 1em);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    * {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Honeypot: fora da tela, invisível para pessoas, presente para bots. */
+  .hp-field {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
 }

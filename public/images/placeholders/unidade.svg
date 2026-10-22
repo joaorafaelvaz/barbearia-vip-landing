@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-label="Foto provisória da unidade">
+  <rect width="1200" height="900" fill="#111827"/>
+  <path d="M300 620 L300 380 L600 220 L900 380 L900 620 Z" fill="none" stroke="#C9A227" stroke-width="8" stroke-linejoin="round"/>
+  <rect x="540" y="460" width="120" height="160" fill="none" stroke="#C9A227" stroke-width="8"/>
+  <text x="600" y="760" text-anchor="middle" font-family="sans-serif" font-size="32" fill="#6B7280">foto da unidade pendente</text>
+</svg>

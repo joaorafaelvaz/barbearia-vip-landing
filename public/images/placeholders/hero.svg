@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-label="Imagem provisória do topo da página">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B0B0C"/><stop offset="1" stop-color="#1F2937"/>
+    </linearGradient>
+    <pattern id="p" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M0 48 L48 0" stroke="#C9A227" stroke-opacity="0.08" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#g)"/>
+  <rect width="1920" height="1080" fill="url(#p)"/>
+  <circle cx="1500" cy="540" r="260" fill="none" stroke="#C9A227" stroke-opacity="0.25" stroke-width="3"/>
+  <text x="960" y="1040" text-anchor="middle" font-family="sans-serif" font-size="28" fill="#6B7280">foto do hero pendente (1920×1080)</text>
+</svg>
