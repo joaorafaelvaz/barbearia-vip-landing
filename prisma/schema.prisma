@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Influencer {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  handle    String?
+  platform  String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  clicks    Click[]
+  leads     Lead[]
+}
+
+model Click {
+  id           String     @id @default(cuid())
+  influencerId String
+  influencer   Influencer @relation(fields: [influencerId], references: [id])
+  utmSource    String?
+  utmMedium    String?
+  utmCampaign  String?
+  utmContent   String?
+  referer      String?
+  userAgent    String?
+  ipHash       String?
+  createdAt    DateTime   @default(now())
+
+  @@index([influencerId, createdAt])
+}
+
+model Unit {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  externalId   Int       @unique
+  name         String
+  address      String?
+  cep          String?
+  city         String?
+  state        String?
+  phone        String?
+  phoneType    String?
+  hours        String?
+  instagram    String?
+  mapsUrl      String?
+  pinHash      String
+  pinRotatedAt DateTime?
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+
+  vouchers Voucher[]
+  audits   VoucherAudit[]
+  leads    Lead[]
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCED
+  SYNCED_EXISTING
+  DUPLICATE
+  FAILED
+}
+
+enum Eligibility {
+  PENDING
+  ELIGIBLE_NEW
+  ELIGIBLE_NO_SALES
+  DENIED_HAS_SALES
+  UNKNOWN
+}
+
+model Lead {
+  id              String      @id @default(cuid())
+  name            String
+  phone           String      @unique
+  email           String?     @unique
+  birthDate       DateTime?   @db.Date
+  preferredUnitId String?
+  preferredUnit   Unit?       @relation(fields: [preferredUnitId], references: [id])
+  influencerId    String?
+  influencer      Influencer? @relation(fields: [influencerId], references: [id])
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  utmContent      String?
+  consentAt       DateTime?
+  ipHash          String?
+
+  externalId           Int?
+  syncStatus           SyncStatus  @default(PENDING)
+  syncAttempts         Int         @default(0)
+  syncError            String?
+  eligibility          Eligibility @default(PENDING)
+  eligibilityCheckedAt DateTime?
+  eligibilityDetail    String?
+  eligibilityAttempts  Int         @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  voucher   Voucher?
+
+  @@index([influencerId, createdAt])
+  @@index([eligibility, createdAt])
+  @@index([syncStatus, createdAt])
+}
+
+enum VoucherStatus {
+  ACTIVE
+  USED
+  CANCELLED
+}
+
+model Voucher {
+  id              String        @id @default(cuid())
+  code            String        @unique
+  leadId          String        @unique
+  lead            Lead          @relation(fields: [leadId], references: [id])
+  discountPercent Int           @default(10)
+  issuedAt        DateTime      @default(now())
+  expiresAt       DateTime
+  status          VoucherStatus @default(ACTIVE)
+  usedAt          DateTime?
+  usedUnitId      String?
+  usedUnit        Unit?         @relation(fields: [usedUnitId], references: [id])
+  usedBy          String?
+  audits          VoucherAudit[]
+
+  @@index([expiresAt])
+  @@index([usedUnitId, usedAt])
+}
+
+enum VoucherAuditAction {
+  VALIDATED
+  BURNED
+  REJECTED
+}
+
+model VoucherAudit {
+  id        String             @id @default(cuid())
+  voucherId String?
+  voucher   Voucher?           @relation(fields: [voucherId], references: [id])
+  code      String?
+  unitId    String?
+  unit      Unit?              @relation(fields: [unitId], references: [id])
+  action    VoucherAuditAction
+  reason    String?
+  ipHash    String?
+  createdAt DateTime           @default(now())
+
+  @@index([voucherId, createdAt])
+  @@index([unitId, createdAt])
+}
