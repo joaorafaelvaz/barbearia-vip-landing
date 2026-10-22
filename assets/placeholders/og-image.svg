@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Imagem de compartilhamento provisória">
+  <rect width="1200" height="630" fill="#0B0B0C"/>
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#C9A227" stroke-width="4"/>
+  <text x="600" y="250" text-anchor="middle" font-family="Georgia, serif" font-size="64" font-weight="700" fill="#F5F5F4">BARBEARIA VIP</text>
+  <text x="600" y="360" text-anchor="middle" font-family="Georgia, serif" font-size="96" font-weight="700" fill="#C9A227">10% OFF</text>
+  <text x="600" y="430" text-anchor="middle" font-family="sans-serif" font-size="36" fill="#D1D5DB">no seu primeiro corte · válido por 7 dias</text>
+  <text x="1140" y="575" text-anchor="end" font-family="sans-serif" font-size="18" fill="#6B7280">imagem provisória</text>
+</svg>
