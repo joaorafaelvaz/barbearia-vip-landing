@@ -8,6 +8,9 @@
 
 **Por que essa stack:** uma única aplicação resolve página pública, server actions para o formulário, rotas de API para resgate do voucher e painel de atribuição. Deploy gratuito na Vercel, banco gratuito na Neon. Sem filas nem infraestrutura extra.
 
+
+> **Status em 22/10/2026 (fim do dia):** Tarefas 1 a 13 implementadas e verificadas (244 testes unitários/integração, 5 cenários E2E, build e lint limpos). Decisões de execução que diferem do texto original: Next.js 16 (não 15; `proxy.ts` no lugar de `middleware.ts`), Prisma 7 com Postgres também em dev e teste (SQLite não suporta enums), rate limit em memória, bloqueio de PIN em memória. Pendente: Tarefa 14 (ativar API real), analytics (Tarefa 12, só o evento `bvip:analytics` está emitido), conteúdo definitivo, e o repositório no GitHub. Detalhes operacionais no README.
+
 ---
 
 ## 1. Fluxo ponta a ponta
@@ -366,7 +369,7 @@ Classificação de erro no `HttpClient` (cadastro):
 
 ## 6. Tarefas
 
-### Tarefa 1: Scaffold do projeto
+### ✅ Tarefa 1: Scaffold do projeto
 
 **Arquivos:** `package.json`, `tsconfig.json`, `tailwind.config.ts`, `vitest.config.ts`, `playwright.config.ts`, `.env.example`, `.gitignore`, `README.md`
 
@@ -377,7 +380,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Verificar: `npm run dev` sobe, `npm test` roda (0 testes), `npm run typecheck` passa
 - [ ] Commit: `chore: scaffold next.js + prisma + vitest + playwright`
 
-### Tarefa 2: Schema do banco e seed de influencers
+### ✅ Tarefa 2: Schema do banco e seed de influencers
 
 **Arquivos:** `prisma/schema.prisma`, `prisma/seed.ts`, `src/lib/db.ts`
 
@@ -390,7 +393,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Verificar: `npx prisma studio` mostra as tabelas e os influencers
 - [ ] Commit: `feat(db): schema de influencer, click, lead, voucher, unidade e auditoria + seed`
 
-### Tarefa 3: Utilitários puros com TDD
+### ✅ Tarefa 3: Utilitários puros com TDD
 
 **Arquivos:** `src/lib/phone.ts`, `src/lib/voucher-code.ts`, `src/lib/voucher.ts`, `src/lib/hash.ts`, testes em `tests/unit/`
 
@@ -406,7 +409,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Verificar: `npm test` verde
 - [ ] Commit: `feat(lib): normalização de telefone, código e regras de voucher`
 
-### Tarefa 4: Rastreabilidade do influencer
+### ✅ Tarefa 4: Rastreabilidade do influencer
 
 **Arquivos:** `src/lib/attribution.ts`, `src/app/i/[slug]/route.ts`, `src/middleware.ts`, `tests/unit/attribution.test.ts`
 
@@ -421,7 +424,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Verificar manualmente: abrir `/i/joaobarber`, conferir cookie no DevTools e linha em `Click`; abrir `/i/naoexiste` cai na home sem cookie; abrir `/?ref=outro` depois **não** troca o cookie
 - [ ] Commit: `feat(tracking): link /i/[slug], cookie first-touch e registro de cliques`
 
-### Tarefa 5: Cliente da API da Barbearia VIP (mock + HTTP real)
+### ✅ Tarefa 5: Cliente da API da Barbearia VIP (mock + HTTP real)
 
 **Arquivos:** `src/lib/barbearia-vip/client.ts`, `mock-client.ts`, `http-client.ts`, `tests/unit/barbearia-vip.test.ts`, `tests/unit/http-client.test.ts`
 
@@ -441,7 +444,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Teste de fumaça manual **em homologação ou com um email de teste combinado com a Barbearia VIP** (não disparar cadastros falsos em produção): um `curl` com os dados do exemplo da documentação e anotar a `mensagem` real de duplicidade para ajustar a classificação
 - [ ] Commit: `feat(integration): cliente HTTP de POST /api/clientes/novo com mock`
 
-### Tarefa 5b: Regra de elegibilidade "nunca consumiu" (TDD)
+### ✅ Tarefa 5b: Regra de elegibilidade "nunca consumiu" (TDD)
 
 **Arquivos:** `src/lib/eligibility.ts`, `src/actions/verificar-elegibilidade.ts`, `src/app/ja-cliente/page.tsx`, `tests/unit/eligibility.test.ts`
 
@@ -460,7 +463,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Página `/ja-cliente`: "Você já faz parte da Barbearia VIP". Texto claro de que o desconto é exclusivo para primeira visita, sem expor dados do cadastro, com CTA para agendar normalmente e link para o programa de fidelidade. Lead `DENIED` continua atribuído ao influencer (aparece no painel como "já cliente")
 - [ ] Commit: `feat(eligibility): desconto apenas para quem nunca consumiu na Barbearia VIP`
 
-### Tarefa 6: Server action de pré-cadastro + emissão do voucher (TDD)
+### ✅ Tarefa 6: Server action de pré-cadastro + emissão do voucher (TDD)
 
 **Arquivos:** `src/actions/criar-pre-cadastro.ts`, `src/lib/rate-limit.ts`, `src/lib/turnstile.ts`, `tests/unit/criar-pre-cadastro.test.ts`
 
@@ -484,7 +487,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Verificar: `npm test` verde
 - [ ] Commit: `feat(leads): server action de pré-cadastro com voucher de 10% por 7 dias`
 
-### Tarefa 7: Landing page
+### ✅ Tarefa 7: Landing page
 
 **Arquivos:** `src/app/page.tsx`, `src/app/layout.tsx`, `src/components/landing/*`, `src/components/PreCadastroForm.tsx`, `src/app/privacidade/page.tsx`
 
@@ -505,7 +508,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Verificar: Lighthouse mobile ≥ 90 em performance e acessibilidade; formulário funciona sem JS habilitado (progressive enhancement do server action)
 - [ ] Commit: `feat(landing): página principal com formulário de pré-cadastro`
 
-### Tarefa 8: Página do voucher
+### ✅ Tarefa 8: Página do voucher
 
 **Arquivos:** `src/app/voucher/[code]/page.tsx`, `src/components/VoucherCard.tsx`
 
@@ -517,7 +520,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] `/meu-voucher`: formulário com WhatsApp + data de nascimento; se baterem com um lead, redireciona para `/voucher/[code]`; se o lead estiver `UNKNOWN`, mostra "ainda estamos confirmando, volte em alguns minutos"; se `DENIED`, manda para `/ja-cliente`. Rate limit 10/h por IP; resposta idêntica para "não encontrado" e "nascimento errado" (não vazar quem está cadastrado)
 - [ ] Commit: `feat(voucher): página do voucher com QR, compartilhamento e recuperação`
 
-### Tarefa 9: Validador e queima do voucher por unidade (TDD)
+### ✅ Tarefa 9: Validador e queima do voucher por unidade (TDD)
 
 **Arquivos:** `src/app/api/vouchers/[code]/route.ts`, `src/app/api/vouchers/[code]/burn/route.ts`, `src/lib/unit-auth.ts`, `src/lib/voucher.ts` (função `burnVoucher`), `src/app/balcao/page.tsx`, `tests/unit/burn-voucher.test.ts`
 
@@ -561,7 +564,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Em erro 409, mostra o motivo em linguagem clara ("Este voucher já foi usado em 21/10 às 15:32 na unidade Shopping")
 - [ ] Commit: `feat(balcao): validador de voucher e queima atômica com data e unidade`
 
-### Tarefa 10: Painel de atribuição por influencer
+### ✅ Tarefa 10: Painel de atribuição por influencer
 
 **Arquivos:** `src/app/admin/page.tsx`, `src/app/api/admin/export/route.ts`
 
@@ -578,7 +581,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Verificar: números batem com consultas diretas no Prisma Studio
 - [ ] Commit: `feat(admin): painel por influencer e por unidade, auditoria e export CSV`
 
-### Tarefa 11: Reprocessamento de sincronização com a API
+### ✅ Tarefa 11: Reprocessamento de sincronização com a API
 
 **Arquivos:** `src/app/api/cron/sync-leads/route.ts`, `vercel.json`
 
@@ -598,7 +601,7 @@ Classificação de erro no `HttpClient` (cadastro):
 - [ ] Respeitar consentimento: carregar só após aceite do banner de cookies, ou usar modo de consentimento do GA4
 - [ ] Commit: `feat(analytics): eventos GA4/Meta com atribuição por influencer`
 
-### Tarefa 13: E2E, deploy e checklist de lançamento
+### ✅ Tarefa 13: E2E, deploy e checklist de lançamento
 
 **Arquivos:** `tests/e2e/fluxo-completo.spec.ts`, `README.md`
 
