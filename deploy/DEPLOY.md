@@ -6,7 +6,7 @@ Alvo: `https://indicacao.barbeariavip.com.br`, no mesmo servidor do ERP, ao lado
 
 | Item | Como verificar | Observação |
 |---|---|---|
-| Node.js 22 LTS | `node -v` | Se não houver: NodeSource ou `nvm` para o usuário do serviço |
+| Node.js 22 LTS | `node -v` | Instalar via NodeSource (passo 0 abaixo). Evitar o snap: roda confinado e falha com systemd/prisma |
 | PostgreSQL 14+ | `psql --version` | Pode ser o Postgres do ERP (se for Postgres) ou uma instância nova. Alternativa: Docker `postgres:16` |
 | nginx com `sites-enabled` | `nginx -v` | Já existe |
 | certbot | `certbot --version` | Para o certificado Let's Encrypt |
@@ -17,6 +17,11 @@ Alvo: `https://indicacao.barbeariavip.com.br`, no mesmo servidor do ERP, ao lado
 ## Passo a passo (primeira vez)
 
 ```bash
+# 0. Node 22 LTS (Ubuntu/Debian, via NodeSource)
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node -v && npm -v        # v22.x / 10.x
+
 # 1. código
 sudo mkdir -p /var/www/barbearia-vip-landing && sudo chown bvip:bvip /var/www/barbearia-vip-landing
 sudo -u bvip git clone https://github.com/joaorafaelvaz/barbearia-vip-landing /var/www/barbearia-vip-landing
