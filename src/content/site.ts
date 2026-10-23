@@ -33,7 +33,7 @@ export const site = {
   meta: {
     title: "Barbearia VIP | 10% OFF no seu primeiro corte",
     description:
-      "Cadastre-se em 1 minuto, receba seu voucher na hora e use em qualquer uma das 29 unidades da Barbearia VIP em até 7 dias.",
+      "Cadastre-se em 1 minuto, receba seu voucher na hora e use em qualquer uma das 30 unidades da Barbearia VIP em até 7 dias.",
     ogAlt: "Barbearia VIP — 10% OFF no seu primeiro corte, válido por 7 dias",
   },
 
@@ -46,7 +46,7 @@ export const site = {
     eyebrow: "Campanha exclusiva para novos clientes",
     headline: "10% OFF no seu primeiro corte na Barbearia VIP",
     subtitle:
-      "Cadastre-se em 1 minuto, receba seu voucher na hora e use em qualquer uma das nossas 29 unidades em até 7 dias.",
+      "Cadastre-se em 1 minuto, receba seu voucher na hora e use em qualquer uma das nossas 30 unidades em até 7 dias.",
     cta: "Quero meu desconto",
     /** `{handle}` é substituído pelo @ do influencer. */
     referralBadge: "Indicação de @{handle}",
@@ -136,11 +136,11 @@ export const site = {
     title: "Sobre a Barbearia VIP",
     // PENDENTE: 2 a 3 frases oficiais sobre a marca (desde quando existe, diferencial, fidelidade)
     paragraphs: [
-      "A Barbearia VIP é uma rede de barbearias com 29 unidades, criada para quem quer corte e barba bem feitos, em um ambiente pensado para você relaxar.",
+      "A Barbearia VIP é uma rede de barbearias com 30 unidades, criada para quem quer corte e barba bem feitos, em um ambiente pensado para você relaxar.",
       "Cada visita conta: quem é cliente VIP acumula pontos no programa de fidelidade e troca por benefícios nas unidades.",
     ],
     stats: [
-      { value: "29", label: "unidades" }, // PENDENTE: confirmar 29 ou 31
+      { value: "30", label: "unidades" }, // PENDENTE: confirmar 29 ou 31
       { value: "7 dias", label: "de validade do voucher" },
       { value: "1 min", label: "para se cadastrar" },
     ],
@@ -164,7 +164,7 @@ export const site = {
     items: [
       {
         q: "Posso usar em qualquer unidade?",
-        a: "Sim, em qualquer uma das 29 unidades.",
+        a: "Sim, em qualquer uma das 30 unidades.",
       },
       {
         q: "Já sou cliente, ganho o desconto?",
@@ -297,7 +297,7 @@ export const site = {
   },
 
   footer: {
-    tagline: "Corte e barba bem feitos, em 29 unidades.", // PENDENTE: confirmar número de unidades
+    tagline: "Corte e barba bem feitos, em 30 unidades.", // PENDENTE: confirmar número de unidades
     links: [
       { href: "/privacidade", text: "Política de Privacidade" },
       { href: "/meu-voucher", text: "Meu voucher" },
