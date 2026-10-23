@@ -11,7 +11,7 @@ export const site = {
     name: "Barbearia VIP",
     shortName: "VIP",
     campaign: "10% OFF no primeiro corte",
-    unitsCount: 29, // PENDENTE: briefing diz 29, planilha recebida tem 31 — confirmar
+    unitsCount: 30, // 31 cadastradas, SC 401 Antiga inativa (confirmado em 23/10)
     instagram: {
       handle: "@barbeariavip", // PENDENTE: Instagram oficial
       url: "https://instagram.com/barbeariavip", // PENDENTE: Instagram oficial
@@ -140,7 +140,7 @@ export const site = {
       "Cada visita conta: quem é cliente VIP acumula pontos no programa de fidelidade e troca por benefícios nas unidades.",
     ],
     stats: [
-      { value: "30", label: "unidades" }, // PENDENTE: confirmar 29 ou 31
+      { value: "30", label: "unidades" },
       { value: "7 dias", label: "de validade do voucher" },
       { value: "1 min", label: "para se cadastrar" },
     ],
@@ -297,7 +297,7 @@ export const site = {
   },
 
   footer: {
-    tagline: "Corte e barba bem feitos, em 30 unidades.", // PENDENTE: confirmar número de unidades
+    tagline: "Corte e barba bem feitos, em 30 unidades.", 
     links: [
       { href: "/privacidade", text: "Política de Privacidade" },
       { href: "/meu-voucher", text: "Meu voucher" },
