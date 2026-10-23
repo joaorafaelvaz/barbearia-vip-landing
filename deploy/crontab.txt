@@ -1,0 +1,4 @@
+# crontab -u bvip -e   (ou /etc/cron.d/barbearia-vip-landing)
+# Reprocessa leads pendentes (elegibilidade UNKNOWN e cadastros FAILED) a cada 15 min.
+# Substitua ${CRON_SECRET} pelo valor do .env do app.
+*/15 * * * * curl -fsS -m 290 -H "Authorization: Bearer ${CRON_SECRET}" http://127.0.0.1:3100/api/cron/sync-leads >> /var/log/bvip-landing-cron.log 2>&1

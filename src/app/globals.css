@@ -12,9 +12,9 @@
   --color-line-strong: #3f3f46;
   --color-fg: #f5f5f4;
   --color-muted: #a1a1aa;
-  --color-gold: #c9a227;
-  --color-gold-strong: #e0b93a;
-  --color-gold-soft: rgba(201, 162, 39, 0.12);
+  --color-gold: #d9b437;
+  --color-gold-strong: #e6c454;
+  --color-gold-soft: rgba(217, 180, 55, 0.12);
   --color-ink: #0b0b0c;
   --color-danger: #fca5a5;
   --color-danger-bg: rgba(248, 113, 113, 0.12);
@@ -22,7 +22,7 @@
   --color-success-bg: rgba(134, 239, 172, 0.12);
 
   --radius-card: 1rem;
-  --shadow-gold: 0 10px 30px -10px rgba(201, 162, 39, 0.45);
+  --shadow-gold: 0 10px 30px -10px rgba(217, 180, 55, 0.45);
 }
 
 /* Fontes vêm das variáveis do next/font (layout.tsx). Pilha do sistema como fallback. */
@@ -85,4 +85,9 @@
     opacity: 0;
     pointer-events: none;
   }
+}
+
+/* reCAPTCHA v3: badge oculto; o aviso textual obrigatório está no formulário. */
+.grecaptcha-badge {
+  visibility: hidden;
 }

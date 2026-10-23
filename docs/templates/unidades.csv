@@ -1,2 +1,2 @@
-slug,unidade_id,nome,endereco,cep,cidade,uf,telefone,tipo_telefone,horario,instagram,link_maps
-florianopolis-centro,45,Florianópolis - Centro,"Av. Prefeito Osmar Cunha, 208, sala 01, Centro",88015-100,Florianópolis,SC,4833652897,fixo,Seg-Sex 09:00-20:00 | Sáb 09:00-13:00 | Dom Fechado,@barbeariavip.centro,https://maps.app.goo.gl/...
+slug,unidade_id,nome,endereco,cep,cidade,uf,telefone,tipo_telefone,horario,instagram,link_maps,ativo
+florianopolis-centro,45,Florianópolis - Centro,"Av. Prefeito Osmar Cunha, 208, sala 01, Centro",88015-100,Florianópolis,SC,4833652897,fixo,Seg-Sex 09:00-20:00 | Sáb 09:00-13:00 | Dom Fechado,@barbeariavip.centro,https://maps.app.goo.gl/...,sim

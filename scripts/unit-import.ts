@@ -5,6 +5,7 @@
  *
  * - Unidade nova: gera PIN aleatório de 6 dígitos, grava só o hash, e escreve o PIN no arquivo de saída.
  * - Unidade existente (mesmo unidade_id): atualiza os dados cadastrais e MANTÉM o PIN, salvo --reset-pins.
+ * - Coluna `ativo` do CSV (sim/nao) define unidades inativas; --inactive é um complemento pontual.
  * - O arquivo de PINs vai por padrão para ../unidades-pins-<data>.csv (FORA do repositório). Apague após entregar às recepções.
  */
 import "dotenv/config";
@@ -36,7 +37,7 @@ async function main() {
     const data = {
       slug: u.slug, name: u.name, address: u.address, cep: u.cep, city: u.city, state: u.state,
       phone: u.phone, phoneType: u.phoneType, hours: u.hours, instagram: u.instagram, mapsUrl: u.mapsUrl,
-      active: !inactive.has(u.slug),
+      active: u.active && !inactive.has(u.slug),
       ...(pin ? { pinHash: hashPin(pin), pinRotatedAt: existing ? new Date() : null } : {}),
     };
     if (!dryRun) {

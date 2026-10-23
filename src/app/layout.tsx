@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     siteName: site.brand.name,
     title: site.meta.title,
     description: site.meta.description,
-    // PENDENTE: og-image real (PNG 1200×630). WhatsApp não renderiza SVG no preview.
+    // og-image.png gerada por scripts/dev/og-image.mjs a partir do logo real.
     images: [{ url: getSiteAsset("og-image"), width: 1200, height: 630, alt: site.meta.ogAlt }],
   },
   twitter: {

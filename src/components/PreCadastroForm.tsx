@@ -34,7 +34,31 @@ type Props = {
 type AnalyticsEvent = "form_step1_done" | "form_step2_view" | "form_submit";
 
 const MAX_UNKNOWN_ATTEMPTS = 3;
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+const RECAPTCHA_ACTION = "pre_cadastro";
+
+declare global {
+  interface Window {
+    grecaptcha?: {
+      ready(cb: () => void): void;
+      execute(siteKey: string, opts: { action: string }): Promise<string>;
+    };
+  }
+}
+
+/** Obtém um token do reCAPTCHA v3; resolve com null se o script não carregou. */
+function getRecaptchaToken(siteKey: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    const g = window.grecaptcha;
+    if (!g) return resolve(null);
+    const timer = setTimeout(() => resolve(null), 8000);
+    g.ready(() => {
+      g.execute(siteKey, { action: RECAPTCHA_ACTION })
+        .then((t) => { clearTimeout(timer); resolve(t); })
+        .catch(() => { clearTimeout(timer); resolve(null); });
+    });
+  });
+}
 
 const F = FORM_FIELDS;
 const copy = site.form;
@@ -102,6 +126,7 @@ export function PreCadastroForm({ unitGroups, defaultUnitSlug }: Props) {
   // Contagem de tentativas quando a API não responde (etapa 1 e etapa 2).
   const [unknownStreak, setUnknownStreak] = useState(0);
   const [unavailableStreak, setUnavailableStreak] = useState(0);
+  const captchaTokenRef = useRef<string | null>(null);
 
   // Reações a resultados das actions (sem setState: só navegação e analytics).
   useEffect(() => {
@@ -204,6 +229,22 @@ export function PreCadastroForm({ unitGroups, defaultUnitSlug }: Props) {
       event.preventDefault();
       focusFirstError(next);
       return;
+    }
+    // reCAPTCHA v3: na primeira passagem obtemos o token e reenviamos o form; na segunda, seguimos.
+    if (RECAPTCHA_SITE_KEY) {
+      if (captchaTokenRef.current) {
+        captchaTokenRef.current = null; // token é de uso único; o próximo envio busca outro
+      } else {
+        event.preventDefault();
+        const form = event.currentTarget;
+        void getRecaptchaToken(RECAPTCHA_SITE_KEY).then((token) => {
+          const input = form.elements.namedItem(F.captchaToken);
+          if (input instanceof HTMLInputElement) input.value = token ?? "";
+          captchaTokenRef.current = token ?? "sem-token"; // segue mesmo sem token: o servidor decide
+          form.requestSubmit();
+        });
+        return;
+      }
     }
     setUnavailableStreak(submitState.status === "unavailable" ? unavailableStreak + 1 : 1);
     track("form_submit");
@@ -406,15 +447,16 @@ export function PreCadastroForm({ unitGroups, defaultUnitSlug }: Props) {
           />
         </div>
 
-        {TURNSTILE_SITE_KEY && (
+        {RECAPTCHA_SITE_KEY && (
           <>
-            <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="lazyOnload" />
-            <div
-              className="cf-turnstile"
-              data-sitekey={TURNSTILE_SITE_KEY}
-              data-theme="dark"
-              data-response-field-name={F.turnstileToken}
-            />
+            <Script src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`} strategy="lazyOnload" />
+            <input type="hidden" name={F.captchaToken} defaultValue="" />
+            {/* O badge do reCAPTCHA é ocultado via CSS; o Google exige então este aviso visível. */}
+            <p className="text-xs text-muted">
+              Este site é protegido pelo reCAPTCHA e se aplicam a{" "}
+              <a href="https://policies.google.com/privacy" className="underline" target="_blank" rel="noreferrer">Política de Privacidade</a> e os{" "}
+              <a href="https://policies.google.com/terms" className="underline" target="_blank" rel="noreferrer">Termos de Serviço</a> do Google.
+            </p>
           </>
         )}
 

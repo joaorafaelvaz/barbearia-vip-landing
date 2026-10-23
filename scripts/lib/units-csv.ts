@@ -16,6 +16,7 @@ export interface UnitRow {
   hours: string | null;
   instagram: string | null;
   mapsUrl: string | null;
+  active: boolean;
 }
 
 const nul = (v: string | undefined) => (v && v.trim() !== "" ? v.trim() : null);
@@ -43,6 +44,7 @@ export function readUnitsCsv(path: string): UnitRow[] {
       slug, externalId, name: r.nome.trim(),
       address: nul(r.endereco), cep: nul(r.cep), city: nul(r.cidade), state: nul(r.uf),
       phone, phoneType: nul(r.tipo_telefone), hours: nul(r.horario), instagram: nul(r.instagram), mapsUrl: nul(r.link_maps),
+      active: !/^(nao|não|n|0|false)$/i.test((r.ativo ?? "sim").trim()),
     });
   });
   if (errors.length) throw new Error(`CSV inválido:\n- ${errors.join("\n- ")}`);

@@ -18,7 +18,7 @@ Fonte: export do sistema da Barbearia VIP. Convertido para `unidades.csv`/`unida
 | 20 | CEP ausente (veio 0) |
 | 25 | cidade 'Florianopolis' sem acento; corrigida para 'Florianópolis' |
 | 32 | CEP ausente (veio 0) |
-| 33 | nome contém 'ANTIGA': unidade desativada? (mesmo CEP da SC 401 id 61) |
+| 33 | ~~unidade desativada?~~ **Confirmado em 23/10: desativada.** Coluna `ativo = nao` no CSV |
 | 47 | CEP ausente (veio 0) |
 | 48 | CEP ausente (veio 0) |
 | 51 | CEP ausente (veio 0) |
@@ -41,6 +41,6 @@ Fonte: export do sistema da Barbearia VIP. Convertido para `unidades.csv`/`unida
 
 ## Perguntas
 
-1. São 31 linhas e o briefing dizia 29. A `Florianópolis - SC 401 - ANTIGA` (id 33) está desativada? Há outra que não participa da campanha?
-2. O botão "Agendar agora" da página do voucher deve apontar para o WhatsApp da unidade? A maioria dos números é fixo. Alternativas: um WhatsApp central, o link de agendamento do app, ou só exibir o telefone.
+1. ~~São 31 linhas e o briefing dizia 29.~~ **Resolvido:** a `SC 401 - ANTIGA` (id 33) está desativada; 30 unidades participam.
+2. (telefones faltantes e destino do "Agendar agora" serão informados pelo cliente) O botão "Agendar agora" da página do voucher deve apontar para o WhatsApp da unidade? A maioria dos números é fixo. Alternativas: um WhatsApp central, o link de agendamento do app, ou só exibir o telefone.
 3. Nome da unidade exibido ao cliente: `Florianópolis - Centro` (padrão adotado) ou outro formato?

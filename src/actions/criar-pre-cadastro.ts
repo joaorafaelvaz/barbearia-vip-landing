@@ -5,7 +5,7 @@ import type { PreCadastroState } from "./types";
 import { FORM_FIELDS } from "./types";
 import { getRequestContext } from "@/lib/request-context";
 import { runPreCadastro } from "@/lib/pre-cadastro";
-import { verifyTurnstile } from "@/lib/turnstile";
+import { verifyRecaptcha } from "@/lib/recaptcha";
 
 const str = (fd: FormData, k: string) => (typeof fd.get(k) === "string" ? (fd.get(k) as string) : "");
 
@@ -13,8 +13,8 @@ const str = (fd: FormData, k: string) => (typeof fd.get(k) === "string" ? (fd.ge
 export async function criarPreCadastro(_prev: PreCadastroState, formData: FormData): Promise<PreCadastroState> {
   const ctx = await getRequestContext();
 
-  const turnstileOk = await verifyTurnstile(str(formData, FORM_FIELDS.turnstileToken) || null, ctx.ip);
-  if (!turnstileOk) return { status: "error", fieldErrors: {}, formError: "Não conseguimos confirmar que você não é um robô. Recarregue a página e tente de novo." };
+  const captchaOk = await verifyRecaptcha(str(formData, FORM_FIELDS.captchaToken) || null, ctx.ip);
+  if (!captchaOk) return { status: "error", fieldErrors: {}, formError: "Não conseguimos confirmar que você não é um robô. Recarregue a página e tente de novo." };
 
   const outcome = await runPreCadastro(
     {

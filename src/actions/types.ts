@@ -28,5 +28,5 @@ export const FORM_FIELDS = {
   birthDate: "birthDate", // dd/mm/aaaa
   consent: "consent",
   honeypot: "website",
-  turnstileToken: "cf-turnstile-response",
+  captchaToken: "g-recaptcha-response",
 } as const;

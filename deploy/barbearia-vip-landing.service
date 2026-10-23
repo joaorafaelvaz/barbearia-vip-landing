@@ -1,0 +1,24 @@
+# /etc/systemd/system/barbearia-vip-landing.service
+# systemctl daemon-reload && systemctl enable --now barbearia-vip-landing
+[Unit]
+Description=Barbearia VIP - landing da campanha com influencers
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=bvip
+Group=bvip
+WorkingDirectory=/var/www/barbearia-vip-landing
+EnvironmentFile=/var/www/barbearia-vip-landing/.env
+Environment=NODE_ENV=production
+Environment=PORT=3100
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node .next/standalone/server.js
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

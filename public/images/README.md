@@ -1,14 +1,12 @@
-# Imagens da landing
+# Imagens da marca
 
-A landing procura primeiro o arquivo real nesta pasta e só usa o placeholder de `placeholders/` se ele não existir (ver `src/lib/site-assets.ts`). Basta colocar o arquivo com o nome abaixo e fazer o deploy; nenhum código precisa mudar.
+| Arquivo | Origem | Uso |
+|---|---|---|
+| `logo.png` | `assets/brand/logo_horizontal_1920x1080.png` recortado ao conteúdo, fundo transparente | cabeçalho e rodapé (`getSiteAsset("logo")`) |
+| `icon.png` | `assets/brand/icone_2000.png` em 512 px | ícone genérico |
+| `../../src/app/icon.png`, `apple-icon.png` | idem | favicon e ícone iOS (convenção do App Router) |
+| `og-image.png` | gerado por `scripts/dev/og-image.mjs` | preview no WhatsApp/Instagram (1200×630) |
+| `placeholders/*.svg` | provisórios | usados só quando o arquivo real não existe |
 
-| Nome fixo | Coloque aqui | Especificação | Placeholder usado hoje |
-|---|---|---|---|
-| `logo` | `logo.svg` (ou `.png`) | fundo transparente, mín. 1200 px de largura | `placeholders/logo.svg` |
-| `hero` | `hero.jpg` (ou `.webp`/`.png`) | 1920×1080, horizontal, sem texto | `placeholders/hero.svg` |
-| `og-image` | `og-image.png` (ou `.jpg`) | 1200×630, logo + "10% OFF no primeiro corte" | `placeholders/og-image.svg` |
-| `unidade` | `unidades/<slug>.jpg` | 4:3, mín. 1200 px, uma por unidade | `placeholders/unidade.svg` |
-
-Extensões aceitas, nesta ordem de preferência: `svg`, `png`, `jpg`, `jpeg`, `webp`.
-
-Cores provisórias (fundo `#0B0B0C`, dourado `#C9A227`) ficam em `src/app/globals.css` (tokens `@theme`) e documentadas em `src/content/site.ts`.
+Pendente: foto do hero (`hero.jpg`, 1920×1080) e fotos das unidades (`unidades/<slug>.jpg`).
+Cor da marca: `#D9B437` (dourado). Fontes vetoriais em `assets/brand/` (`.eps`, `.ai`).

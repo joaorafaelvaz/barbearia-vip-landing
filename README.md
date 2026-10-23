@@ -67,7 +67,7 @@ Para usar a API real: `BARBEARIA_VIP_CLIENT=http`. Quando a autenticação for l
 | `/admin` | Painel por influencer e por unidade, export CSV (token em `ADMIN_TOKEN`) |
 | `GET /api/vouchers/<codigo>` | Validador público (só leitura) |
 | `POST /api/vouchers/<codigo>/burn` | Queima (`{ unit, pin, operator? }`) |
-| `GET /api/cron/sync-leads` | Reprocessamento (Bearer `CRON_SECRET`; cron da Vercel a cada 15 min) |
+| `GET /api/cron/sync-leads` | Reprocessamento (Bearer `CRON_SECRET`; crontab do VPS a cada 15 min, ver `deploy/crontab.txt`) |
 
 - **Plano de implementação:** [`docs/plans/2026-10-22-landing-barbearia-vip.md`](docs/plans/2026-10-22-landing-barbearia-vip.md). Arquitetura, modelo de dados, integração com a API, regras do voucher e 15 tarefas em ordem.
 - **Unidades (dados reais):** [`docs/data/unidades.csv`](docs/data/unidades.csv) e `.xlsx`, 31 linhas convertidas do export do sistema. Pendências e perguntas em [`docs/data/README.md`](docs/data/README.md). Template de referência em `docs/templates/unidades.csv`.
@@ -82,8 +82,12 @@ Para usar a API real: `BARBEARIA_VIP_CLIENT=http`. Quando a autenticação for l
 - Queima no balcão com o PIN da unidade (um por recepção), gravando data/hora e unidade. Irreversível e auditada.
 - Sem resposta da API de consulta, nenhum voucher é emitido; o lead fica pendente e é re-verificado.
 
+## Deploy
+
+Produção roda em VPS próprio (`indicacao.barbeariavip.com.br`) atrás do nginx, como serviço systemd na porta 3100. Guia completo, configs e script em [`deploy/DEPLOY.md`](deploy/DEPLOY.md). Anti-bot: Google reCAPTCHA v3 (`NEXT_PUBLIC_RECAPTCHA_SITE_KEY` e `RECAPTCHA_SECRET_KEY`).
+
 ## Próximos passos
 
-1. Resolver as pendências de `docs/data/README.md` (quais das 31 unidades participam, telefones faltantes).
+1. Resolver as pendências de `docs/data/README.md` (telefones faltantes das unidades 51, 52, 60 e 63).
 2. Preencher o que for possível em `docs/templates/conteudo.md`.
 3. Executar a Tarefa 1 do plano (scaffold do projeto).

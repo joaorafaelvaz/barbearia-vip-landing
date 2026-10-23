@@ -21,11 +21,11 @@ export const site = {
   /**
    * Tokens visuais provisórios. O CSS não consegue importar TS, então os valores
    * reais vivem em `src/app/globals.css` (`@theme`); este bloco documenta e
-   * permite que componentes que precisem do hex (ex.: Turnstile theme) o leiam.
+   * permite que componentes que precisem do hex (ex.: tema de widgets de terceiros) o leiam.
    */
   theme: {
     background: "#0B0B0C", // PENDENTE: cor de fundo da marca
-    primary: "#C9A227", // PENDENTE: cor primária da marca
+    primary: "#D9B437", // PENDENTE: cor primária da marca
     fontBody: "Inter", // PENDENTE: fonte da marca
     fontDisplay: "Bebas Neue", // PENDENTE: fonte da marca
   },

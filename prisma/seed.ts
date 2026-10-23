@@ -1,7 +1,7 @@
 /**
  * Seed de desenvolvimento (idempotente):
  * - 3 influencers de exemplo
- * - todas as unidades de docs/data/unidades.csv com o MESMO PIN (SEED_UNIT_PIN, padrão 123456)
+ * - todas as unidades de docs/data/unidades.csv com o MESMO PIN (SEED_UNIT_PIN, padrão 123456); coluna `ativo` respeitada
  * Em produção use `npm run unit:import` (PIN aleatório por unidade) e `npm run influencer:add`.
  */
 import "dotenv/config";
@@ -25,10 +25,10 @@ async function main() {
   const units = readUnitsCsv("docs/data/unidades.csv");
   for (const u of units) {
     const { externalId, ...rest } = u;
-    const data = { ...rest, active: !/antiga/i.test(u.slug), pinHash: hashPin(pin) };
+    const data = { ...rest, pinHash: hashPin(pin) };
     await prisma.unit.upsert({ where: { externalId }, create: { externalId, ...data }, update: data });
   }
-  console.log(`seed: ${influencers.length} influencers, ${units.length} unidades (PIN ${pin} em todas; "antiga" inativa)`);
+  console.log(`seed: ${influencers.length} influencers, ${units.length} unidades (PIN ${pin} em todas; coluna "ativo" do CSV respeitada)`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); }).finally(() => prisma.$disconnect());

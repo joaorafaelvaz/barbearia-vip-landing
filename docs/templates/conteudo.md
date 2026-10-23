@@ -9,7 +9,7 @@
 | Logo principal (fundo escuro) | SVG ou PNG com transparência, mín. 1200 px de largura → `public/images/logo.svg` | [PENDENTE: logo] (placeholder: `assets/placeholders/logo.svg`) |
 | Logo versão clara (fundo claro) | idem → `public/images/logo-light.svg` | [PENDENTE: logo clara] |
 | Ícone / favicon | PNG 512×512 quadrado → `public/images/icon.png` | [PENDENTE: ícone] |
-| Cor primária | hex, ex. `#C9A227` (dourado) | [PENDENTE: cor primária] (provisório: `#C9A227`) |
+| Cor primária | hex, ex. `#D9B437` (dourado) | [PENDENTE: cor primária] (provisório: `#D9B437`) |
 | Cor de fundo | hex, ex. `#0B0B0C` | [PENDENTE: cor de fundo] (provisório: `#0B0B0C`) |
 | Fonte, se houver padrão de marca | nome da fonte ou arquivo | [PENDENTE: fonte] (provisório: Inter + Bebas Neue) |
 

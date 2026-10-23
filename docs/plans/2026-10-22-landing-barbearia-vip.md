@@ -9,6 +9,8 @@
 **Por que essa stack:** uma única aplicação resolve página pública, server actions para o formulário, rotas de API para resgate do voucher e painel de atribuição. Deploy gratuito na Vercel, banco gratuito na Neon. Sem filas nem infraestrutura extra.
 
 
+> **Atualização em 23/10/2026:** hospedagem passou de Vercel para **VPS próprio com nginx** (`indicacao.barbeariavip.com.br`, ver `deploy/DEPLOY.md`; o cron virou crontab). Anti-bot passou de Turnstile para **Google reCAPTCHA v3**. Marca aplicada (logo, ícone, cor `#D9B437`, og-image). `SC 401 - ANTIGA` confirmada inativa (30 unidades ativas). Onde este documento ainda cita Vercel, Neon ou Turnstile, leia VPS/Postgres local/reCAPTCHA.
+>
 > **Status em 22/10/2026 (fim do dia):** Tarefas 1 a 13 implementadas e verificadas (244 testes unitários/integração, 5 cenários E2E, build e lint limpos). Decisões de execução que diferem do texto original: Next.js 16 (não 15; `proxy.ts` no lugar de `middleware.ts`), Prisma 7 com Postgres também em dev e teste (SQLite não suporta enums), rate limit em memória, bloqueio de PIN em memória. Pendente: Tarefa 14 (ativar API real), analytics (Tarefa 12, só o evento `bvip:analytics` está emitido), conteúdo definitivo, e o repositório no GitHub. Detalhes operacionais no README.
 
 ---

@@ -12,7 +12,7 @@ import path from "node:path";
 
 export type SiteAssetName = "logo" | "hero" | "og-image" | "unidade";
 
-const EXTENSIONS = ["svg", "png", "jpg", "jpeg", "webp"] as const;
+const EXTENSIONS = ["png", "jpg", "jpeg", "webp", "svg"] as const;
 
 const cache = new Map<SiteAssetName, string>();
 
