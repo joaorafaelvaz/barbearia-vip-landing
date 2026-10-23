@@ -6,7 +6,7 @@ Alvo: `https://indicacao.barbeariavip.com.br`, no mesmo servidor do ERP, ao lado
 
 | Item | Como verificar | Observação |
 |---|---|---|
-| Node.js 22 LTS | `node -v` | Instalar via NodeSource (passo 0 abaixo). Evitar o snap: roda confinado e falha com systemd/prisma |
+| Node.js 22 LTS com npm | `node -v && npm -v` | Passo 0 abaixo (tarball oficial). Evitar o snap e o `nodejs` do apt do Ubuntu (v20, sem npm) |
 | PostgreSQL 14+ | `psql --version` | Pode ser o Postgres do ERP (se for Postgres) ou uma instância nova. Alternativa: Docker `postgres:16` |
 | nginx com `sites-enabled` | `nginx -v` | Já existe |
 | certbot | `certbot --version` | Para o certificado Let's Encrypt |
@@ -17,10 +17,13 @@ Alvo: `https://indicacao.barbeariavip.com.br`, no mesmo servidor do ERP, ao lado
 ## Passo a passo (primeira vez)
 
 ```bash
-# 0. Node 22 LTS (Ubuntu/Debian, via NodeSource)
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt-get install -y nodejs
-node -v && npm -v        # v22.x / 10.x
+# 0. Node 22 LTS: binário oficial em /usr/local (independe da versão do Ubuntu; traz npm e npx)
+#    Se houver um nodejs do apt instalado (ex.: v20 sem npm), remova antes: sudo apt-get remove -y nodejs
+V=$(curl -fsSL https://nodejs.org/dist/latest-v22.x/ | grep -oE 'node-v22\.[0-9]+\.[0-9]+-linux-x64\.tar\.xz' | head -1)
+curl -fsSL "https://nodejs.org/dist/latest-v22.x/$V" | sudo tar -xJ -C /usr/local --strip-components=1
+hash -r && node -v && npm -v        # v22.x / 10.x
+#    Alternativa via apt (só se a NodeSource suportar sua versão do Ubuntu):
+#    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt-get install -y nodejs
 
 # 1. código
 sudo mkdir -p /var/www/barbearia-vip-landing && sudo chown bvip:bvip /var/www/barbearia-vip-landing

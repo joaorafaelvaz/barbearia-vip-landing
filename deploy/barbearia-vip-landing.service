@@ -13,7 +13,8 @@ EnvironmentFile=/var/www/barbearia-vip-landing/.env
 Environment=NODE_ENV=production
 Environment=PORT=3100
 Environment=HOSTNAME=127.0.0.1
-ExecStart=/usr/bin/node .next/standalone/server.js
+# /usr/bin/env resolve o node em /usr/local/bin (tarball oficial) ou /usr/bin (apt)
+ExecStart=/usr/bin/env node .next/standalone/server.js
 Restart=always
 RestartSec=5
 NoNewPrivileges=true
