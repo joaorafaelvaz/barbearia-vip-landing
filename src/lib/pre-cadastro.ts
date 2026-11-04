@@ -256,6 +256,6 @@ export async function runPreCadastro(
     return issueVoucher(tx, lead.id);
   });
 
-  await syncLeadWithApi(voucher.leadId, client);
+  await syncLeadWithApi(voucher.leadId!, client);
   return { status: "redirect", code: voucher.code };
 }

@@ -11,13 +11,21 @@ export type UnitRef = { slug: string; name: string };
 /** Espelho de `VoucherLookup` (src/lib/voucher-service.ts) com datas em ISO, como vem do JSON. */
 export interface VoucherLookupJson {
   code: string;
+  kind?: "CAMPAIGN" | "MANUAL";
   state: VoucherState;
   discountPercent: number;
+  discountLabel?: string;
   issuedAt: string;
   expiresAt: string;
   customerFirstName: string;
   usedAt: string | null;
   usedUnit: UnitRef | null;
+  restrictedUnit?: UnitRef | null;
+}
+
+/** Rótulo do desconto com fallback para respostas antigas (só percentual). */
+export function discountText(v: { discountLabel?: string; discountPercent: number }): string {
+  return v.discountLabel ?? `${v.discountPercent}% de desconto`;
 }
 
 export type LookupOutcome =
@@ -27,11 +35,11 @@ export type LookupOutcome =
   | { kind: "error" };
 
 export type BurnOutcome =
-  | { kind: "ok"; code: string; usedAt: string; unit: UnitRef; customerFirstName: string; discountPercent: number }
+  | { kind: "ok"; code: string; usedAt: string; unit: UnitRef; customerFirstName: string; discountPercent: number; discountLabel?: string }
   | { kind: "bad_pin" }
   | { kind: "locked"; retryAfterSeconds: number }
   | { kind: "not_found" }
-  | { kind: "conflict"; reason: "EXPIRED" | "ALREADY_USED" | "CANCELLED"; usedAt: string | null; usedUnit: UnitRef | null }
+  | { kind: "conflict"; reason: "EXPIRED" | "ALREADY_USED" | "CANCELLED" | "WRONG_UNIT"; usedAt: string | null; usedUnit: UnitRef | null; restrictedUnit?: UnitRef | null }
   | { kind: "error" };
 
 /** Mesma regra de src/lib/voucher-code.ts (duplicada para não puxar node:crypto no bundle do cliente). */
@@ -87,6 +95,7 @@ export async function fetchBurn(code: string, body: { unit: string; pin: string;
         unit: (data.unit as UnitRef) ?? { slug: body.unit, name: body.unit },
         customerFirstName: String(data.customerFirstName ?? ""),
         discountPercent: Number(data.discountPercent ?? 10),
+        ...(typeof data.discountLabel === "string" ? { discountLabel: data.discountLabel } : {}),
       };
     }
     if (res.status === 401) return { kind: "bad_pin" };
@@ -94,12 +103,13 @@ export async function fetchBurn(code: string, body: { unit: string; pin: string;
     if (res.status === 404) return { kind: "not_found" };
     if (res.status === 409) {
       const reason = data.reason;
-      if (reason === "EXPIRED" || reason === "ALREADY_USED" || reason === "CANCELLED") {
+      if (reason === "EXPIRED" || reason === "ALREADY_USED" || reason === "CANCELLED" || reason === "WRONG_UNIT") {
         return {
           kind: "conflict",
           reason,
           usedAt: typeof data.usedAt === "string" ? data.usedAt : null,
           usedUnit: (data.usedUnit as UnitRef | null) ?? null,
+          restrictedUnit: (data.restrictedUnit as UnitRef | null) ?? null,
         };
       }
     }
@@ -237,6 +247,8 @@ export function conflictMessage(o: Extract<BurnOutcome, { kind: "conflict" }>): 
       return "Este voucher expirou. O desconto não pode mais ser aplicado.";
     case "CANCELLED":
       return "Este voucher foi cancelado. O desconto não pode ser aplicado.";
+    case "WRONG_UNIT":
+      return `Este voucher só vale na unidade ${o.restrictedUnit?.name ?? "indicada no voucher"}. Não pode ser aplicado aqui.`;
   }
 }
 

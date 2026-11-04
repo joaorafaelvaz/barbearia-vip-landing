@@ -30,3 +30,34 @@ export function getVoucherState(v: VoucherLike, now: Date = new Date()): Voucher
 export function canBurn(v: VoucherLike, now: Date = new Date()): boolean {
   return getVoucherState(v, now) === "ACTIVE";
 }
+
+// ---------------------------------------------------------------- desconto (percentual ou valor)
+
+export type DiscountType = "PERCENT" | "AMOUNT";
+
+export interface DiscountInfo {
+  discountType: DiscountType;
+  discountPercent: number;
+  discountAmountCents: number | null;
+}
+
+/** "10%" ou "R$ 20,00". */
+export function formatDiscount(d: DiscountInfo): string {
+  if (d.discountType === "AMOUNT" && d.discountAmountCents != null) {
+    return `R$ ${(d.discountAmountCents / 100).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  }
+  return `${d.discountPercent}%`;
+}
+
+/** "10% de desconto" ou "R$ 20,00 de desconto". */
+export function discountLabel(d: DiscountInfo): string {
+  return `${formatDiscount(d)} de desconto`;
+}
+
+/** "20,00" | "20" | "R$ 1.250,50" → centavos (125050). null se inválido ou ≤ 0. */
+export function parseAmountToCents(input: string): number | null {
+  const cleaned = input.replace(/[R$\s]/g, "").replace(/\./g, "").replace(",", ".");
+  if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) return null;
+  const cents = Math.round(Number(cleaned) * 100);
+  return cents > 0 ? cents : null;
+}

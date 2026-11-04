@@ -6,6 +6,7 @@ import {
   CODE_INPUT_REGEX,
   STATE_LABEL,
   conflictMessage,
+  discountText,
   fetchBurn,
   fetchLookup,
   fullDateTime,
@@ -136,7 +137,7 @@ export function BalcaoConsole({ unit, initialCode }: Props) {
   async function burn() {
     if (!lookup || !pin) return;
     const ok = window.confirm(
-      `Aplicar ${lookup.discountPercent}% de desconto para ${lookup.customerFirstName} e queimar o voucher ${lookup.code}?\n\nIsso não pode ser desfeito.`,
+      `Aplicar ${discountText(lookup)} para ${lookup.customerFirstName || "o cliente"} e queimar o voucher ${lookup.code}?\n\nIsso não pode ser desfeito.`,
     );
     if (!ok) return;
     setBurning(true);
@@ -162,12 +163,14 @@ export function BalcaoConsole({ unit, initialCode }: Props) {
         break;
       case "conflict":
         setBurnError(conflictMessage(r));
-        setLookup({
-          ...lookup,
-          state: r.reason === "ALREADY_USED" ? "USED" : r.reason,
-          usedAt: r.usedAt ?? lookup.usedAt,
-          usedUnit: r.usedUnit ?? lookup.usedUnit,
-        });
+        if (r.reason !== "WRONG_UNIT") {
+          setLookup({
+            ...lookup,
+            state: r.reason === "ALREADY_USED" ? "USED" : r.reason,
+            usedAt: r.usedAt ?? lookup.usedAt,
+            usedUnit: r.usedUnit ?? lookup.usedUnit,
+          });
+        }
         break;
       default:
         setBurnError("Não foi possível queimar o voucher agora. Verifique a conexão e tente de novo.");
@@ -251,7 +254,7 @@ export function BalcaoConsole({ unit, initialCode }: Props) {
         >
           <h1 className="text-xl font-bold text-emerald-200">Desconto aplicado</h1>
           <p className="text-base text-fg">
-            {burnOk.discountPercent}% de desconto para <strong>{burnOk.customerFirstName}</strong>. Voucher{" "}
+            {discountText(burnOk)} para <strong>{burnOk.customerFirstName || "o cliente"}</strong>. Voucher{" "}
             <strong>{burnOk.code}</strong> queimado.
           </p>
           <p className="text-base text-fg">
@@ -303,7 +306,14 @@ export function BalcaoConsole({ unit, initialCode }: Props) {
               {STATE_LABEL[lookup.state]}
             </span>
           </div>
-          <p className="text-lg font-semibold text-gold">{lookup.discountPercent}% de desconto</p>
+          <p className="text-lg font-semibold text-gold">{discountText(lookup)}</p>
+          {lookup.restrictedUnit && (
+            <p className={`rounded-xl border px-3 py-2 text-base ${lookup.restrictedUnit.slug === unit.slug ? "border-line text-muted" : "border-red-500/40 bg-red-500/15 text-red-200"}`}>
+              {lookup.restrictedUnit.slug === unit.slug
+                ? `Voucher exclusivo desta unidade (${lookup.restrictedUnit.name}).`
+                : `Atenção: este voucher só vale na unidade ${lookup.restrictedUnit.name}.`}
+            </p>
+          )}
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-base">
             <dt className="text-muted">Código</dt>
             <dd className="font-mono">{lookup.code}</dd>

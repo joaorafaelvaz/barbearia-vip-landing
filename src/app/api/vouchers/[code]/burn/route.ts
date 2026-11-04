@@ -69,5 +69,5 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ code: 
   const result = await burnVoucher(code, auth.unit, operator ?? null, ipHash);
   if (result.ok) return json(result, 200);
   if (result.reason === "NOT_FOUND") return json({ ok: false, reason: "NOT_FOUND" }, 404);
-  return json({ ok: false, reason: result.reason, usedAt: result.usedAt ?? null, usedUnit: result.usedUnit ?? null }, 409);
+  return json({ ok: false, reason: result.reason, usedAt: result.usedAt ?? null, usedUnit: result.usedUnit ?? null, restrictedUnit: result.restrictedUnit ?? null }, 409);
 }

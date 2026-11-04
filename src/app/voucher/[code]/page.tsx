@@ -33,7 +33,7 @@ export default async function VoucherPage({ params }: { params: Promise<{ code: 
   const t = site.voucher;
   const active = v.state === "ACTIVE";
   const expiresLabel = formatDateTimeBr(v.expiresAt);
-  const qr = active ? await qrSvgForCode(v.code) : null;
+  const qr = active ? await qrSvgForCode(v.code, v.restrictedUnit?.slug) : null;
   const shareHref = `https://wa.me/?text=${encodeURIComponent(whatsappShareText(v, expiresLabel))}`;
   // PENDENTE: destino do "Agendar agora". Usa o WhatsApp da unidade de referência se for celular; senão, site.booking.url.
   const unitWa = v.preferredUnit?.phone && v.preferredUnit.phoneType === "celular" ? `https://wa.me/55${v.preferredUnit.phone}` : null;
@@ -51,13 +51,15 @@ export default async function VoucherPage({ params }: { params: Promise<{ code: 
 
             <div className="mt-8 rounded-xl border border-line-strong bg-bg p-5 text-center">
               <p className="font-display text-4xl tracking-[0.15em] text-gold sm:text-5xl" data-testid="voucher-code">{v.code}</p>
-              <p className="mt-2 text-xl font-semibold text-fg">{fill(t.discount, { percent: v.discountPercent })}</p>
+              <p className="mt-2 text-xl font-semibold text-fg">{fill(t.discount, { label: v.discountLabel })}</p>
               <span className={`mt-4 inline-block rounded-full border px-3 py-1 text-sm font-semibold ${stateStyles[v.state]}`} data-testid="voucher-state">
                 {t.states[v.state]}
               </span>
               <p className="mt-3 text-sm text-muted">{fill(t.validUntil, { date: expiresLabel })}</p>
               <p className="text-xs text-muted">{fill(t.issuedAt, { date: formatDateBr(v.issuedAt) })}</p>
             </div>
+
+            {v.restrictedUnit && <Alert tone="warning" className="mt-6">{fill(t.restrictedNote, { unit: v.restrictedUnit.name })}</Alert>}
 
             {v.state === "USED" && v.usedAt && (
               <Alert className="mt-6">{fill(t.usedAt, { date: formatDateTimeBr(v.usedAt), unit: v.usedUnit?.name ?? "" })}</Alert>
@@ -81,7 +83,9 @@ export default async function VoucherPage({ params }: { params: Promise<{ code: 
             <div className="mt-8 border-t border-line pt-6">
               <h2 className="text-sm font-semibold tracking-[0.15em] text-gold uppercase">{t.rulesTitle}</h2>
               <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted">
-                {t.rules.map((r) => <li key={r}>• {r}</li>)}
+                {t.rules.map((r) => (
+                  <li key={r}>• {v.restrictedUnit && r.includes("qualquer unidade") ? `Uso único, apenas na unidade ${v.restrictedUnit.name}.` : r}</li>
+                ))}
               </ul>
             </div>
           </div>

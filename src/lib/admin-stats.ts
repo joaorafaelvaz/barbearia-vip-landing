@@ -144,7 +144,7 @@ export async function influencerStats(period: Period, now: Date = new Date()): P
       select: { influencerId: true, eligibility: true },
     }),
     prisma.voucher.findMany({
-      where: { issuedAt: between(period) },
+      where: { issuedAt: between(period), kind: "CAMPAIGN" },
       select: { status: true, expiresAt: true, lead: { select: { influencerId: true } } },
     }),
     prisma.lead.groupBy({
@@ -189,7 +189,7 @@ export async function influencerStats(period: Period, now: Date = new Date()): P
     else if (l.eligibility === "UNKNOWN") row.unknown += 1;
   }
   for (const v of vouchers) {
-    const row = rowFor(v.lead.influencerId);
+    const row = rowFor(v.lead?.influencerId ?? null);
     if (!row) continue;
     switch (getVoucherState(v, now)) {
       case "ACTIVE":
@@ -229,6 +229,7 @@ export async function unitStats(period: Period): Promise<UnitRow[]> {
       select: {
         usedUnitId: true,
         usedAt: true,
+        kind: true,
         lead: { select: { influencer: { select: { slug: true, name: true } } } },
       },
     }),
@@ -256,9 +257,9 @@ export async function unitStats(period: Period): Promise<UnitRow[]> {
     a.row.used += 1;
     const day = toDateInput(v.usedAt);
     a.byDay.set(day, (a.byDay.get(day) ?? 0) + 1);
-    const inf = v.lead.influencer;
-    const key = inf?.slug ?? UNATTRIBUTED_KEY;
-    const entry = a.byInf.get(key) ?? { slug: inf?.slug ?? null, name: inf?.name ?? UNATTRIBUTED_LABEL, count: 0 };
+    const inf = v.lead?.influencer ?? null;
+    const key = v.kind === "MANUAL" ? "__manual__" : (inf?.slug ?? UNATTRIBUTED_KEY);
+    const entry = a.byInf.get(key) ?? { slug: inf?.slug ?? null, name: v.kind === "MANUAL" ? "Voucher manual" : (inf?.name ?? UNATTRIBUTED_LABEL), count: 0 };
     entry.count += 1;
     a.byInf.set(key, entry);
   }

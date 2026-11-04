@@ -64,7 +64,7 @@ Para usar a API real: `BARBEARIA_VIP_CLIENT=http`. Quando a autenticação for l
 | `/meu-voucher` | Recuperar voucher por WhatsApp + nascimento |
 | `/ja-cliente` | Negado: já é cliente com consumo |
 | `/balcao` e `/balcao/<slug>` | Recepção: validar e queimar voucher com o PIN da unidade |
-| `/admin` | Painel por influencer e por unidade, export CSV (token em `ADMIN_TOKEN`) |
+| `/admin` | Painel por influencer e por unidade, export CSV, criação de vouchers manuais (% ou R$, válidos só na unidade escolhida) (token em `ADMIN_TOKEN`) |
 | `GET /api/vouchers/<codigo>` | Validador público (só leitura) |
 | `POST /api/vouchers/<codigo>/burn` | Queima (`{ unit, pin, operator? }`) |
 | `GET /api/cron/sync-leads` | Reprocessamento (Bearer `CRON_SECRET`; crontab do VPS a cada 15 min, ver `deploy/crontab.txt`) |
@@ -80,6 +80,7 @@ Para usar a API real: `BARBEARIA_VIP_CLIENT=http`. Quando a autenticação for l
 - Desconto **só para quem nunca consumiu**: consulta por telefone na API da Barbearia VIP; qualquer item no histórico nega.
 - Voucher `VIP-XXXXXX`, 10%, validade de 7 × 24h, um por telefone, válido em qualquer unidade.
 - Queima no balcão com o PIN da unidade (um por recepção), gravando data/hora e unidade. Irreversível e auditada.
+- Vouchers manuais criados no painel: desconto em % ou em R$, validade escolhida, titular opcional, válidos apenas na unidade indicada (o balcão de outra unidade recusa).
 - Sem resposta da API de consulta, nenhum voucher é emitido; o lead fica pendente e é re-verificado.
 
 ## Deploy

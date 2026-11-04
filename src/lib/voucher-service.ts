@@ -8,26 +8,32 @@
  */
 import { prisma } from "@/lib/db";
 import { normalizeVoucherCode } from "@/lib/voucher-code";
-import { getVoucherState, type VoucherState } from "@/lib/voucher";
+import { discountLabel, getVoucherState, type DiscountInfo, type VoucherState } from "@/lib/voucher";
 
 export type UnitRef = { slug: string; name: string };
 
 export interface VoucherLookup {
   code: string;
+  kind: "CAMPAIGN" | "MANUAL";
   state: VoucherState;
+  /** Mantido por compatibilidade; use `discountLabel`. */
   discountPercent: number;
+  discount: DiscountInfo;
+  discountLabel: string;
   issuedAt: Date;
   expiresAt: Date;
   customerFirstName: string;
   usedAt: Date | null;
   usedUnit: UnitRef | null;
+  /** Se preenchido, o voucher só pode ser queimado nesta unidade. */
+  restrictedUnit: UnitRef | null;
 }
 
-export type BurnFailureReason = "NOT_FOUND" | "EXPIRED" | "ALREADY_USED" | "CANCELLED";
+export type BurnFailureReason = "NOT_FOUND" | "EXPIRED" | "ALREADY_USED" | "CANCELLED" | "WRONG_UNIT";
 
 export type BurnResult =
-  | { ok: true; code: string; discountPercent: number; usedAt: Date; unit: UnitRef; customerFirstName: string }
-  | { ok: false; reason: BurnFailureReason; usedAt?: Date | null; usedUnit?: UnitRef | null };
+  | { ok: true; code: string; discountPercent: number; discountLabel: string; usedAt: Date; unit: UnitRef; customerFirstName: string }
+  | { ok: false; reason: BurnFailureReason; usedAt?: Date | null; usedUnit?: UnitRef | null; restrictedUnit?: UnitRef | null };
 
 /** Primeira palavra do nome, ignorando espaços extras. */
 export function firstName(fullName: string): string {
@@ -37,7 +43,17 @@ export function firstName(fullName: string): string {
 const voucherInclude = {
   lead: { select: { name: true } },
   usedUnit: { select: { slug: true, name: true } },
+  restrictedUnit: { select: { slug: true, name: true } },
 } as const;
+
+type VoucherWithRefs = { lead: { name: string } | null; holderName: string | null; discountType: "PERCENT" | "AMOUNT"; discountPercent: number; discountAmountCents: number | null };
+
+function holderFirstName(v: Pick<VoucherWithRefs, "lead" | "holderName">): string {
+  return firstName(v.lead?.name ?? v.holderName ?? "");
+}
+function discountOf(v: Pick<VoucherWithRefs, "discountType" | "discountPercent" | "discountAmountCents">): DiscountInfo {
+  return { discountType: v.discountType, discountPercent: v.discountPercent, discountAmountCents: v.discountAmountCents };
+}
 
 // ---------------------------------------------------------------- lookup
 
@@ -57,15 +73,20 @@ export async function lookupVoucher(
     });
   }
 
+  const discount = discountOf(v);
   return {
     code: v.code,
+    kind: v.kind,
     state: getVoucherState(v),
     discountPercent: v.discountPercent,
+    discount,
+    discountLabel: discountLabel(discount),
     issuedAt: v.issuedAt,
     expiresAt: v.expiresAt,
-    customerFirstName: firstName(v.lead.name),
+    customerFirstName: holderFirstName(v),
     usedAt: v.usedAt,
     usedUnit: v.usedUnit,
+    restrictedUnit: v.restrictedUnit,
   };
 }
 
@@ -82,8 +103,9 @@ export async function burnVoucher(
   const usedBy = operator?.trim() || null;
 
   // Transição atômica: só uma das chamadas concorrentes vê count === 1.
+  // Voucher restrito a outra unidade não entra no filtro (OR), então cai na releitura como WRONG_UNIT.
   const { count } = await prisma.voucher.updateMany({
-    where: { code, status: "ACTIVE", expiresAt: { gt: now } },
+    where: { code, status: "ACTIVE", expiresAt: { gt: now }, OR: [{ restrictedUnitId: null }, { restrictedUnitId: unit.id }] },
     data: { status: "USED", usedAt: now, usedUnitId: unit.id, usedBy },
   });
 
@@ -96,9 +118,10 @@ export async function burnVoucher(
       ok: true,
       code,
       discountPercent: v.discountPercent,
+      discountLabel: discountLabel(discountOf(v)),
       usedAt: v.usedAt ?? now,
       unit: { slug: unit.slug, name: unit.name },
-      customerFirstName: firstName(v.lead.name),
+      customerFirstName: holderFirstName(v),
     };
   }
 
@@ -110,10 +133,14 @@ export async function burnVoucher(
     result = { ok: false, reason: "NOT_FOUND" };
   } else {
     const state = getVoucherState(v, now);
-    // Se ainda parece ACTIVE aqui, outra queima venceu a corrida entre o update e a releitura.
-    const reason: BurnFailureReason =
-      state === "EXPIRED" ? "EXPIRED" : state === "CANCELLED" ? "CANCELLED" : "ALREADY_USED";
-    result = { ok: false, reason, usedAt: v.usedAt, usedUnit: v.usedUnit };
+    if (state === "ACTIVE" && v.restrictedUnitId && v.restrictedUnitId !== unit.id) {
+      result = { ok: false, reason: "WRONG_UNIT", restrictedUnit: v.restrictedUnit };
+    } else {
+      // Se ainda parece ACTIVE aqui, outra queima venceu a corrida entre o update e a releitura.
+      const reason: BurnFailureReason =
+        state === "EXPIRED" ? "EXPIRED" : state === "CANCELLED" ? "CANCELLED" : "ALREADY_USED";
+      result = { ok: false, reason, usedAt: v.usedAt, usedUnit: v.usedUnit };
+    }
   }
 
   await prisma.voucherAudit.create({

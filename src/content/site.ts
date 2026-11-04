@@ -209,7 +209,7 @@ export const site = {
     eyebrow: "Voucher de desconto",
     title: "Seu voucher está pronto",
     greeting: "Olá, {name}! Apresente este QR na recepção da unidade.",
-    discount: "{percent}% de desconto",
+    discount: "{label}",
     validUntil: "Válido até {date}",
     issuedAt: "Emitido em {date}",
     states: {
@@ -226,6 +226,8 @@ export const site = {
     share: "Salvar no WhatsApp",
     book: "Agendar agora",
     bookHint: "Unidade de referência: {unit}",
+    restrictedNote: "Este voucher é válido apenas na unidade {unit}.",
+    noteTitle: "Observação",
     rulesTitle: "Como usar",
     rules: [
       "Mostre o QR ou informe o código na recepção antes de pagar.",

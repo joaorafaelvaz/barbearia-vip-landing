@@ -54,9 +54,10 @@ model Unit {
   active       Boolean   @default(true)
   createdAt    DateTime  @default(now())
 
-  vouchers Voucher[]
-  audits   VoucherAudit[]
-  leads    Lead[]
+  vouchers           Voucher[]      @relation("VoucherUsedUnit")
+  restrictedVouchers Voucher[]      @relation("VoucherRestrictedUnit")
+  audits             VoucherAudit[]
+  leads              Lead[]
 }
 
 enum SyncStatus {
@@ -116,23 +117,43 @@ enum VoucherStatus {
   CANCELLED
 }
 
+enum VoucherKind {
+  CAMPAIGN // emitido pela landing (lead da campanha)
+  MANUAL // criado no painel admin
+}
+
+enum DiscountType {
+  PERCENT
+  AMOUNT
+}
+
 model Voucher {
-  id              String        @id @default(cuid())
-  code            String        @unique
-  leadId          String        @unique
-  lead            Lead          @relation(fields: [leadId], references: [id])
-  discountPercent Int           @default(10)
-  issuedAt        DateTime      @default(now())
-  expiresAt       DateTime
-  status          VoucherStatus @default(ACTIVE)
-  usedAt          DateTime?
-  usedUnitId      String?
-  usedUnit        Unit?         @relation(fields: [usedUnitId], references: [id])
-  usedBy          String?
-  audits          VoucherAudit[]
+  id                  String        @id @default(cuid())
+  code                String        @unique
+  kind                VoucherKind   @default(CAMPAIGN)
+  leadId              String?       @unique
+  lead                Lead?         @relation(fields: [leadId], references: [id])
+  discountType        DiscountType  @default(PERCENT)
+  discountPercent     Int           @default(10) // usado quando discountType = PERCENT
+  discountAmountCents Int? // usado quando discountType = AMOUNT (centavos)
+  restrictedUnitId    String? // se preenchido, só pode ser queimado nesta unidade
+  restrictedUnit      Unit?         @relation("VoucherRestrictedUnit", fields: [restrictedUnitId], references: [id])
+  holderName          String? // titular de voucher manual (opcional)
+  holderPhone         String? // E.164, opcional
+  note                String? // observação interna (motivo)
+  createdBy           String? // "admin" ou nome do operador
+  issuedAt            DateTime      @default(now())
+  expiresAt           DateTime
+  status              VoucherStatus @default(ACTIVE)
+  usedAt              DateTime?
+  usedUnitId          String?
+  usedUnit            Unit?         @relation("VoucherUsedUnit", fields: [usedUnitId], references: [id])
+  usedBy              String?
+  audits              VoucherAudit[]
 
   @@index([expiresAt])
   @@index([usedUnitId, usedAt])
+  @@index([kind, issuedAt])
 }
 
 enum VoucherAuditAction {

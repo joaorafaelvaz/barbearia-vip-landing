@@ -1,6 +1,9 @@
 import { alerts, influencerStats, parsePeriod, toDateInput, unitStats } from "@/lib/admin-stats";
 import { AlertsPanel } from "@/components/admin/AlertsPanel";
 import { CancelVoucherForm } from "@/components/admin/CancelVoucherForm";
+import { CreateVoucherForm } from "@/components/admin/CreateVoucherForm";
+import { ManualVoucherList } from "@/components/admin/ManualVoucherList";
+import { getUnitsForForm, groupUnitsByCity } from "@/lib/units";
 import { Card } from "@/components/admin/Card";
 import { InfluencerTable, parseSort } from "@/components/admin/InfluencerTable";
 import { PendingContent } from "@/components/admin/PendingContent";
@@ -23,7 +26,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const to = toDateInput(period.to);
   const { sort, dir } = parseSort(first(sp.sort), first(sp.dir));
 
-  const [influencers, units, alertData] = await Promise.all([influencerStats(period), unitStats(period), alerts(period)]);
+  const [influencers, units, alertData, unitOptions] = await Promise.all([influencerStats(period), unitStats(period), alerts(period), getUnitsForForm()]);
   const exportHref = `/api/admin/export?from=${from}&to=${to}`;
   const activeIdle = units.filter((u) => u.active && u.used === 0).length;
 
@@ -59,6 +62,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       >
         <UnitTable rows={units} />
       </Card>
+
+      <Card title="Criar voucher" description="Desconto em % ou em R$, válido apenas na unidade escolhida. O cliente recebe o link ou o código; a recepção queima no balcão com o PIN da unidade.">
+        <CreateVoucherForm units={unitOptions} groups={groupUnitsByCity(unitOptions)} />
+      </Card>
+
+      <ManualVoucherList />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card title="Cancelar voucher" description="Para abuso. Só vouchers ativos; usados não podem ser cancelados. Fica registrado na auditoria como REJECTED / CANCELLED_BY_ADMIN.">
