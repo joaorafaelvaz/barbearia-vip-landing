@@ -31,7 +31,7 @@ export async function getVoucherPageData(codeInput: string): Promise<VoucherPage
     },
   });
   if (!v) return null;
-  const discount: DiscountInfo = { discountType: v.discountType, discountPercent: v.discountPercent, discountAmountCents: v.discountAmountCents };
+  const discount: DiscountInfo = { discountType: v.discountType, discountPercent: v.discountPercent, discountAmountCents: v.discountAmountCents, serviceName: v.serviceName };
   return {
     code: v.code,
     kind: v.kind,

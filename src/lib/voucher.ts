@@ -33,24 +33,27 @@ export function canBurn(v: VoucherLike, now: Date = new Date()): boolean {
 
 // ---------------------------------------------------------------- desconto (percentual ou valor)
 
-export type DiscountType = "PERCENT" | "AMOUNT";
+export type DiscountType = "PERCENT" | "AMOUNT" | "SERVICE";
 
 export interface DiscountInfo {
   discountType: DiscountType;
   discountPercent: number;
   discountAmountCents: number | null;
+  serviceName?: string | null;
 }
 
-/** "10%" ou "R$ 20,00". */
+/** "10%", "R$ 20,00" ou o nome do serviço ("Corte de cabelo"). */
 export function formatDiscount(d: DiscountInfo): string {
+  if (d.discountType === "SERVICE" && d.serviceName) return d.serviceName;
   if (d.discountType === "AMOUNT" && d.discountAmountCents != null) {
     return `R$ ${(d.discountAmountCents / 100).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   }
   return `${d.discountPercent}%`;
 }
 
-/** "10% de desconto" ou "R$ 20,00 de desconto". */
+/** "10% de desconto", "R$ 20,00 de desconto" ou "Cortesia: Corte de cabelo". */
 export function discountLabel(d: DiscountInfo): string {
+  if (d.discountType === "SERVICE" && d.serviceName) return `Cortesia: ${d.serviceName}`;
   return `${formatDiscount(d)} de desconto`;
 }
 

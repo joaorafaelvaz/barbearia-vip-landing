@@ -5,6 +5,8 @@ import { createVoucherAction, type CreateVoucherState } from "@/app/admin/action
 import type { UnitOption } from "@/lib/units";
 
 const initial: CreateVoucherState = {};
+// PENDENTE: confirmar a lista de serviços oferecidos; o campo aceita qualquer texto.
+const SERVICE_SUGGESTIONS = ["Corte de cabelo", "Barba", "Corte + Barba", "Sobrancelha", "Hidratação", "Pigmentação", "Pezinho"];
 const input = "w-full rounded-lg border border-line bg-bg px-3 py-1.5 text-sm text-fg outline-none focus:border-gold";
 const label = "flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted";
 
@@ -15,7 +17,7 @@ function plusDays(n: number): string {
 
 export function CreateVoucherForm({ units, groups }: { units: UnitOption[]; groups: { label: string; units: UnitOption[] }[] }) {
   const [state, action, pending] = useActionState(createVoucherAction, initial);
-  const [type, setType] = useState<"PERCENT" | "AMOUNT">("PERCENT");
+  const [type, setType] = useState<"PERCENT" | "AMOUNT" | "SERVICE">("PERCENT");
   const err = state.fieldErrors ?? {};
 
   return (
@@ -23,14 +25,29 @@ export function CreateVoucherForm({ units, groups }: { units: UnitOption[]; grou
       <div className="grid gap-3 sm:grid-cols-2">
         <label className={label}>
           Tipo de desconto
-          <select name="discountType" value={type} onChange={(e) => setType(e.target.value as "PERCENT" | "AMOUNT")} className={input}>
+          <select name="discountType" value={type} onChange={(e) => setType(e.target.value as "PERCENT" | "AMOUNT" | "SERVICE")} className={input}>
             <option value="PERCENT">Percentual (%)</option>
             <option value="AMOUNT">Valor em R$</option>
+            <option value="SERVICE">Serviço específico (cortesia)</option>
           </select>
         </label>
         <label className={label}>
-          {type === "PERCENT" ? "Percentual (1 a 100)" : "Valor (ex.: 20,00)"}
-          <input name="discountValue" required inputMode="decimal" placeholder={type === "PERCENT" ? "15" : "20,00"} className={input} aria-invalid={err.discountValue ? true : undefined} />
+          {type === "PERCENT" ? "Percentual (1 a 100)" : type === "AMOUNT" ? "Valor (ex.: 20,00)" : "Serviço (ex.: Corte de cabelo)"}
+          <input
+            name="discountValue"
+            required
+            inputMode={type === "SERVICE" ? "text" : "decimal"}
+            list={type === "SERVICE" ? "servicos-sugeridos" : undefined}
+            maxLength={type === "SERVICE" ? 60 : 12}
+            placeholder={type === "PERCENT" ? "15" : type === "AMOUNT" ? "20,00" : "Corte de cabelo"}
+            className={input}
+            aria-invalid={err.discountValue ? true : undefined}
+          />
+          {type === "SERVICE" && (
+            <datalist id="servicos-sugeridos">
+              {SERVICE_SUGGESTIONS.map((s) => <option key={s} value={s} />)}
+            </datalist>
+          )}
           {err.discountValue && <span className="text-xs normal-case text-danger">{err.discountValue}</span>}
         </label>
         <label className={label}>

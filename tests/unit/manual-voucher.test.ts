@@ -48,6 +48,22 @@ describe("createManualVoucher", () => {
     expect(v.expiresAt.toISOString()).toBe("2100-01-01T02:59:59.000Z");
   });
 
+  it("serviço específico: cortesia nomeada, exibida como 'Cortesia: <serviço>'", async () => {
+    const r = await createManualVoucher({ discountType: "SERVICE", discountValue: "Corte de cabelo", unitSlug: "centro", holderName: "Léo Dias" });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(formatDiscount(r.discount)).toBe("Corte de cabelo");
+    const v = await prisma.voucher.findUniqueOrThrow({ where: { code: r.code } });
+    expect(v.discountType).toBe("SERVICE");
+    expect(v.serviceName).toBe("Corte de cabelo");
+    expect(v.discountAmountCents).toBeNull();
+    const look = await lookupVoucher(r.code, { audit: false });
+    expect(look?.discountLabel).toBe("Cortesia: Corte de cabelo");
+    const burn = await burnVoucher(r.code, centro);
+    expect(burn).toMatchObject({ ok: true, discountLabel: "Cortesia: Corte de cabelo", customerFirstName: "Léo" });
+    expect((await listManualVouchers())[0].discount.serviceName).toBe("Corte de cabelo");
+  });
+
   it("valida percentual, valor, unidade inativa, telefone e data no passado", async () => {
     const bad = async (input: Parameters<typeof createManualVoucher>[0]) => {
       const r = await createManualVoucher(input);
@@ -56,6 +72,7 @@ describe("createManualVoucher", () => {
     expect(await bad({ discountType: "PERCENT", discountValue: "150", unitSlug: "centro" })).toHaveProperty("discountValue");
     expect(await bad({ discountType: "PERCENT", discountValue: "12,5", unitSlug: "centro" })).toHaveProperty("discountValue");
     expect(await bad({ discountType: "AMOUNT", discountValue: "abc", unitSlug: "centro" })).toHaveProperty("discountValue");
+    expect(await bad({ discountType: "SERVICE", discountValue: "x", unitSlug: "centro" })).toHaveProperty("discountValue");
     expect(await bad({ discountType: "PERCENT", discountValue: "10", unitSlug: "fechada" })).toHaveProperty("unitSlug");
     expect(await bad({ discountType: "PERCENT", discountValue: "10", unitSlug: "centro", holderPhone: "123" })).toHaveProperty("holderPhone");
     expect(await bad({ discountType: "PERCENT", discountValue: "10", unitSlug: "centro", expiresAt: "2020-01-01" })).toHaveProperty("expiresAt");

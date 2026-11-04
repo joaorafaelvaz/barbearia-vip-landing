@@ -10,7 +10,8 @@ import { normalizeBrMobile } from "@/lib/phone";
 
 export const manualVoucherSchema = z
   .object({
-    discountType: z.enum(["PERCENT", "AMOUNT"]),
+    discountType: z.enum(["PERCENT", "AMOUNT", "SERVICE"]),
+    /** Percentual, valor em reais ou nome do serviço, conforme o tipo. */
     discountValue: z.string().trim().min(1, "Informe o valor do desconto"),
     unitSlug: z.string().trim().min(1, "Escolha a unidade"),
     expiresAt: z.string().trim().optional(), // "aaaa-mm-dd" (input type=date); vazio = +7 dias
@@ -23,8 +24,10 @@ export const manualVoucherSchema = z
     if (v.discountType === "PERCENT") {
       const n = Number(v.discountValue.replace("%", "").replace(",", "."));
       if (!Number.isInteger(n) || n < 1 || n > 100) ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Percentual deve ser inteiro entre 1 e 100" });
-    } else if (parseAmountToCents(v.discountValue) == null) {
-      ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Valor inválido (ex.: 20,00)" });
+    } else if (v.discountType === "AMOUNT") {
+      if (parseAmountToCents(v.discountValue) == null) ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Valor inválido (ex.: 20,00)" });
+    } else if (v.discountValue.length < 2 || v.discountValue.length > 60) {
+      ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Informe o nome do serviço (2 a 60 caracteres)" });
     }
     if (v.holderPhone && !normalizeBrMobile(v.holderPhone)) ctx.addIssue({ code: "custom", path: ["holderPhone"], message: "Celular inválido" });
     if (v.expiresAt) {
@@ -64,8 +67,10 @@ export async function createManualVoucher(raw: ManualVoucherInput, now = new Dat
 
   const discount: DiscountInfo =
     v.discountType === "PERCENT"
-      ? { discountType: "PERCENT", discountPercent: Number(v.discountValue.replace("%", "")), discountAmountCents: null }
-      : { discountType: "AMOUNT", discountPercent: 0, discountAmountCents: parseAmountToCents(v.discountValue)! };
+      ? { discountType: "PERCENT", discountPercent: Number(v.discountValue.replace("%", "")), discountAmountCents: null, serviceName: null }
+      : v.discountType === "AMOUNT"
+        ? { discountType: "AMOUNT", discountPercent: 0, discountAmountCents: parseAmountToCents(v.discountValue)!, serviceName: null }
+        : { discountType: "SERVICE", discountPercent: 0, discountAmountCents: null, serviceName: v.discountValue };
   const expiresAt = v.expiresAt ? parseExpiresAt(v.expiresAt)! : computeExpiresAt(now);
 
   let lastError: unknown;
@@ -114,14 +119,14 @@ export async function listManualVouchers(limit = 30): Promise<ManualVoucherRow[]
     orderBy: { issuedAt: "desc" },
     take: limit,
     select: {
-      code: true, discountType: true, discountPercent: true, discountAmountCents: true,
+      code: true, discountType: true, discountPercent: true, discountAmountCents: true, serviceName: true,
       restrictedUnit: { select: { slug: true, name: true } },
       holderName: true, note: true, createdBy: true, issuedAt: true, expiresAt: true, status: true, usedAt: true,
     },
   });
   return rows.map((r) => ({
     code: r.code,
-    discount: { discountType: r.discountType, discountPercent: r.discountPercent, discountAmountCents: r.discountAmountCents },
+    discount: { discountType: r.discountType, discountPercent: r.discountPercent, discountAmountCents: r.discountAmountCents, serviceName: r.serviceName },
     unit: r.restrictedUnit,
     holderName: r.holderName, note: r.note, createdBy: r.createdBy,
     issuedAt: r.issuedAt, expiresAt: r.expiresAt, status: r.status, usedAt: r.usedAt,

@@ -46,13 +46,13 @@ const voucherInclude = {
   restrictedUnit: { select: { slug: true, name: true } },
 } as const;
 
-type VoucherWithRefs = { lead: { name: string } | null; holderName: string | null; discountType: "PERCENT" | "AMOUNT"; discountPercent: number; discountAmountCents: number | null };
+type VoucherWithRefs = { lead: { name: string } | null; holderName: string | null; discountType: "PERCENT" | "AMOUNT" | "SERVICE"; discountPercent: number; discountAmountCents: number | null; serviceName: string | null };
 
 function holderFirstName(v: Pick<VoucherWithRefs, "lead" | "holderName">): string {
   return firstName(v.lead?.name ?? v.holderName ?? "");
 }
-function discountOf(v: Pick<VoucherWithRefs, "discountType" | "discountPercent" | "discountAmountCents">): DiscountInfo {
-  return { discountType: v.discountType, discountPercent: v.discountPercent, discountAmountCents: v.discountAmountCents };
+function discountOf(v: Pick<VoucherWithRefs, "discountType" | "discountPercent" | "discountAmountCents" | "serviceName">): DiscountInfo {
+  return { discountType: v.discountType, discountPercent: v.discountPercent, discountAmountCents: v.discountAmountCents, serviceName: v.serviceName };
 }
 
 // ---------------------------------------------------------------- lookup
