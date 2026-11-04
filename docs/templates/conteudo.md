@@ -68,9 +68,9 @@
 
 | Item | Valor |
 |---|---|
-| Razão social | [PENDENTE] |
-| CNPJ | [PENDENTE] |
-| Endereço da sede (rodapé e política) | [PENDENTE] |
+| Razão social | Rede Barbearia VIP Ltda. (só na política de privacidade) |
+| CNPJ | não exibir |
+| Endereço da sede (rodapé e política) | Av. Madre Benvenuta, 1168, Santa Mônica, Florianópolis/SC |
 | Email de contato / privacidade (LGPD) | [PENDENTE: ex. privacidade@barbeariavip.com.br] |
 | Instagram oficial | [PENDENTE: @] |
 | TikTok / YouTube (se houver) | [PENDENTE] |
@@ -83,7 +83,7 @@
 
 **Versão provisória (base para o jurídico):**
 
-> A Barbearia VIP ([razão social], CNPJ [CNPJ]) coleta nome, telefone, e-mail, data de nascimento e unidade de preferência para: (1) criar seu cadastro no aplicativo da Barbearia VIP; (2) emitir e validar o voucher promocional; (3) medir os resultados da campanha, inclusive por qual parceiro você chegou até nós. A base legal é o seu consentimento, que pode ser retirado a qualquer momento pelo e-mail [email de privacidade]. Os dados ficam armazenados em servidores na nuvem e são compartilhados apenas com o sistema da Barbearia VIP e com os fornecedores necessários para operar esta página. Você pode solicitar acesso, correção ou exclusão dos seus dados pelo mesmo e-mail. Não vendemos seus dados a terceiros.
+> A Barbearia VIP (Rede Barbearia VIP Ltda.) coleta nome, telefone, e-mail, data de nascimento e unidade de preferência para: (1) criar seu cadastro no aplicativo da Barbearia VIP; (2) emitir e validar o voucher promocional; (3) medir os resultados da campanha, inclusive por qual parceiro você chegou até nós. A base legal é o seu consentimento, que pode ser retirado a qualquer momento pelo e-mail [email de privacidade]. Os dados ficam armazenados em servidores na nuvem e são compartilhados apenas com o sistema da Barbearia VIP e com os fornecedores necessários para operar esta página. Você pode solicitar acesso, correção ou exclusão dos seus dados pelo mesmo e-mail. Não vendemos seus dados a terceiros.
 
 ## 6. Influencers (para gerar os links)
 

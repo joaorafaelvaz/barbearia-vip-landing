@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacidadePage() {
-  // PENDENTE: razão social, CNPJ e e-mail de privacidade reais (site.company).
+  // PENDENTE: e-mail de privacidade real (site.company.privacyEmail).
   const vars = site.company;
 
   return (

@@ -250,9 +250,8 @@ export const site = {
   },
 
   company: {
-    legalName: "Barbearia VIP", // PENDENTE: razão social
-    cnpj: "00.000.000/0001-00", // PENDENTE: CNPJ
-    address: "Endereço da sede a confirmar", // PENDENTE: endereço da sede
+    legalName: "Rede Barbearia VIP Ltda.",
+    address: "Av. Madre Benvenuta, 1168, Santa Mônica, Florianópolis/SC",
     privacyEmail: "privacidade@barbeariavip.com.br", // PENDENTE: e-mail de privacidade (LGPD)
   },
 
@@ -266,7 +265,7 @@ export const site = {
     sections: [
       {
         title: "Quem somos e o que coletamos",
-        text: "A Barbearia VIP ({legalName}, CNPJ {cnpj}) coleta nome, telefone, e-mail, data de nascimento e unidade de preferência quando você se cadastra nesta página.",
+        text: "A Barbearia VIP ({legalName}) coleta nome, telefone, e-mail, data de nascimento e unidade de preferência quando você se cadastra nesta página.",
       },
       {
         title: "Para que usamos seus dados",
@@ -302,7 +301,7 @@ export const site = {
       { href: "/privacidade", text: "Política de Privacidade" },
       { href: "/meu-voucher", text: "Meu voucher" },
     ],
-    legalLine: "{legalName} · CNPJ {cnpj}",
+    legalLine: "Barbearia VIP",
     rights: "Todos os direitos reservados.",
   },
 
