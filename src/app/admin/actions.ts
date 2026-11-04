@@ -77,7 +77,7 @@ export async function cancelVoucher(_prev: CancelVoucherState, formData: FormDat
 // ---------------------------------------------------------------- voucher manual
 
 import { createManualVoucher } from "@/lib/manual-voucher";
-import { formatDiscount } from "@/lib/voucher";
+import { discountLabel } from "@/lib/voucher";
 import { formatDateTimeBr } from "@/lib/date";
 
 export interface CreateVoucherState {
@@ -92,9 +92,19 @@ export interface CreateVoucherState {
 export async function createVoucherAction(_prev: CreateVoucherState, formData: FormData): Promise<CreateVoucherState> {
   if (!(await isAdminRequest())) return { error: "Sessão expirada. Entre novamente." };
   const str = (k: string) => (typeof formData.get(k) === "string" ? (formData.get(k) as string) : "");
+  const discountType = str("discountType") === "AMOUNT" ? "AMOUNT" : str("discountType") === "SERVICE" ? "SERVICE" : "PERCENT";
+  // Serviço escolhido da lista da API vem como "id|nome"; "__other__" (ou lista indisponível) usa o texto digitado.
+  let discountValue = str("discountValue");
+  let serviceExternalId: string | undefined;
+  if (discountType === "SERVICE") {
+    const pick = str("servicePick");
+    const m = /^(\d+)\|(.+)$/.exec(pick);
+    if (m) { serviceExternalId = m[1]; discountValue = m[2].trim(); }
+  }
   const r = await createManualVoucher({
-    discountType: str("discountType") === "AMOUNT" ? "AMOUNT" : "PERCENT",
-    discountValue: str("discountValue"),
+    discountType,
+    discountValue,
+    serviceExternalId,
     unitSlug: str("unitSlug"),
     expiresAt: str("expiresAt") || undefined,
     holderName: str("holderName") || undefined,
@@ -107,6 +117,6 @@ export async function createVoucherAction(_prev: CreateVoucherState, formData: F
   return {
     ok: true,
     code: r.code,
-    summary: `${formatDiscount(r.discount)} de desconto · ${r.unit.name} · válido até ${formatDateTimeBr(r.expiresAt)}`,
+    summary: `${discountLabel(r.discount)} · ${r.unit.name} · válido até ${formatDateTimeBr(r.expiresAt)}`,
   };
 }

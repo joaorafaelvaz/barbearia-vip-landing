@@ -23,6 +23,8 @@ import type {
   ConsumoResult,
   PreCadastroInput,
   PreCadastroResult,
+  ListarServicosResult,
+  ServicoResumo,
 } from "./client";
 
 export const DEFAULT_BASE_URL = "https://franquiabv.com.br";
@@ -261,6 +263,41 @@ export class HttpBarbeariaVipClient implements BarbeariaVipClient {
   // -------------------------------------------------------------------------
   // GET /api/agendas/getConsumoCliente
   // -------------------------------------------------------------------------
+
+  async listarServicos(unidadeId: number): Promise<ListarServicosResult> {
+    const endpoint = "GET /api/agendas/getServicos/:id";
+    const url = joinUrl(this.baseUrl, `/api/agendas/getServicos/${encodeURIComponent(String(unidadeId))}`);
+
+    let raw: RawResponse;
+    try {
+      raw = await this.request(url, this.getInit(), this.getTimeoutMs);
+    } catch (err) {
+      console.warn(`[barbearia-vip] ${endpoint} falhou: ${(err as Error).message}`);
+      return { ok: false, kind: "UNAVAILABLE" };
+    }
+
+    const { status, json, jsonValid } = raw;
+    if (isAuthStatus(status)) {
+      logAuthAlert(endpoint, status);
+      return { ok: false, kind: "UNAVAILABLE", httpStatus: status };
+    }
+    if (status === 404) return { ok: false, kind: "NOT_FOUND", httpStatus: status };
+    if (status < 200 || status >= 300 || !jsonValid) {
+      console.warn(`[barbearia-vip] ${endpoint} respondeu ${status}${jsonValid ? "" : " (corpo não é JSON)"}`);
+      return { ok: false, kind: "UNAVAILABLE", httpStatus: status };
+    }
+    if (sucessoOf(json) === false) return { ok: false, kind: "NOT_FOUND", httpStatus: status };
+
+    const list = isRecord(json) && Array.isArray(json.servicos) ? json.servicos : [];
+    const servicos: ServicoResumo[] = [];
+    for (const item of list) {
+      if (!isRecord(item)) continue;
+      const id = Number(item.id);
+      const nome = typeof item.nome === "string" ? item.nome.trim() : "";
+      if (Number.isInteger(id) && nome) servicos.push({ id, nome });
+    }
+    return { ok: true, servicos };
+  }
 
   async consumoCliente(id: number): Promise<ConsumoResult> {
     const endpoint = "GET /api/agendas/getConsumoCliente";

@@ -34,10 +34,11 @@ import type {
   ConsumoResult,
   PreCadastroInput,
   PreCadastroResult,
+  ListarServicosResult,
 } from "./client";
 
 export interface MockCall {
-  method: "criarCliente" | "buscarClientePorTelefone" | "consumoCliente";
+  method: "criarCliente" | "buscarClientePorTelefone" | "consumoCliente" | "listarServicos";
   args: unknown[];
 }
 
@@ -112,6 +113,22 @@ export class MockBarbeariaVipClient implements BarbeariaVipClient {
     const clientes = CLIENTES_POR_SUFIXO[s];
     // cópia para o chamador não alterar a tabela interna
     return { ok: true, clientes: clientes ? clientes.map((c) => ({ ...c })) : [] };
+  }
+
+  /** Serviços de exemplo iguais para toda unidade; unidade 999 simula API indisponível. */
+  async listarServicos(unidadeId: number): Promise<ListarServicosResult> {
+    this.calls.push({ method: "listarServicos", args: [unidadeId] });
+    await sleep(this.latencyMs);
+    if (unidadeId === 999) return { ok: false, kind: "UNAVAILABLE" };
+    return {
+      ok: true,
+      servicos: [
+        { id: 10, nome: "Corte" },
+        { id: 11, nome: "Barba" },
+        { id: 12, nome: "Corte + Barba" },
+        { id: 13, nome: "Sobrancelha" },
+      ],
+    };
   }
 
   async consumoCliente(id: number): Promise<ConsumoResult> {

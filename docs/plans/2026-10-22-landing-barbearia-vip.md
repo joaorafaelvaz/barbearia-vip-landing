@@ -9,6 +9,8 @@
 **Por que essa stack:** uma única aplicação resolve página pública, server actions para o formulário, rotas de API para resgate do voucher e painel de atribuição. Deploy gratuito na Vercel, banco gratuito na Neon. Sem filas nem infraestrutura extra.
 
 
+> **Atualização em 04/11/2026 (2):** terceiro tipo de voucher manual, `SERVICE` (cortesia de um serviço): a lista de serviços da unidade vem de `GET /api/agendas/getServicos/:id` (`listarServicos` no cliente, cache de 10 min em `src/lib/unit-services.ts`, rota interna `/api/admin/servicos`), com digitação livre como alternativa; grava `serviceName` e `serviceExternalId`.
+>
 > **Atualização em 04/11/2026:** vouchers manuais pelo painel admin (`kind = MANUAL`): desconto percentual ou em reais (`discountType`, `discountAmountCents`), restritos a uma unidade (`restrictedUnitId`, queima em outra unidade devolve `WRONG_UNIT`), validade escolhida, titular opcional (`holderName`, `holderPhone`) sem lead. Migration `manual_vouchers`.
 >
 > **Atualização em 23/10/2026:** hospedagem passou de Vercel para **VPS próprio com nginx** (`indicacao.barbeariavip.com.br`, ver `deploy/DEPLOY.md`; o cron virou crontab). Anti-bot passou de Turnstile para **Google reCAPTCHA v3**. Marca aplicada (logo, ícone, cor `#D9B437`, og-image). `SC 401 - ANTIGA` confirmada inativa (30 unidades ativas). Onde este documento ainda cita Vercel, Neon ou Turnstile, leia VPS/Postgres local/reCAPTCHA.

@@ -25,7 +25,8 @@ function fakeClient(opts: FakeOptions) {
   const consumoCliente = vi.fn<BarbeariaVipClient["consumoCliente"]>(
     async (id) => opts.consumo?.[id] ?? { ok: false, kind: "NOT_FOUND" },
   );
-  const client: BarbeariaVipClient = { criarCliente, buscarClientePorTelefone, consumoCliente };
+  const listarServicos = vi.fn<BarbeariaVipClient["listarServicos"]>(async () => ({ ok: true, servicos: [] }));
+  const client: BarbeariaVipClient = { criarCliente, buscarClientePorTelefone, consumoCliente, listarServicos };
   return { client, criarCliente, buscarClientePorTelefone, consumoCliente };
 }
 
@@ -252,6 +253,7 @@ describe("checkEligibility", () => {
         throw new Error(`falha com ${NOME}`);
       },
       consumoCliente: async () => ({ ok: true, historico: [], pontuacoes: [] }),
+      listarServicos: async () => ({ ok: true, servicos: [] }),
     };
     const r = await checkEligibility(client, TELEFONE, 1);
     expect(r.status).toBe("UNKNOWN");

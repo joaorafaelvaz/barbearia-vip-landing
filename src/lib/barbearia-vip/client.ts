@@ -44,11 +44,22 @@ export type ConsumoResult =
   | { ok: true; historico: unknown[]; pontuacoes: unknown[] }
   | { ok: false; kind: "NOT_FOUND" | "UNAVAILABLE"; httpStatus?: number };
 
+export interface ServicoResumo {
+  id: number;
+  nome: string;
+}
+
+export type ListarServicosResult =
+  | { ok: true; servicos: ServicoResumo[] }
+  | { ok: false; kind: "NOT_FOUND" | "UNAVAILABLE"; httpStatus?: number };
+
 export interface BarbeariaVipClient {
   criarCliente(input: PreCadastroInput): Promise<PreCadastroResult>;
   /** `telefone` sem o 55. Nunca envia `versao`. */
   buscarClientePorTelefone(telefone: string, unidadeId?: number): Promise<BuscarClienteResult>;
   consumoCliente(id: number): Promise<ConsumoResult>;
+  /** GET /api/agendas/getServicos/:id — serviços do app para a unidade. */
+  listarServicos(unidadeId: number): Promise<ListarServicosResult>;
 }
 
 export type BarbeariaVipClientKind = "mock" | "http";

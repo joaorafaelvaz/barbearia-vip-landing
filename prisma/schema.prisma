@@ -138,6 +138,7 @@ model Voucher {
   discountPercent     Int           @default(10) // usado quando discountType = PERCENT
   discountAmountCents Int? // usado quando discountType = AMOUNT (centavos)
   serviceName         String? // usado quando discountType = SERVICE
+  serviceExternalId   Int? // id do serviço no sistema da Barbearia VIP, quando escolhido da lista
   restrictedUnitId    String? // se preenchido, só pode ser queimado nesta unidade
   restrictedUnit      Unit?         @relation("VoucherRestrictedUnit", fields: [restrictedUnitId], references: [id])
   holderName          String? // titular de voucher manual (opcional)

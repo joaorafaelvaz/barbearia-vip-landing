@@ -13,6 +13,8 @@ export const manualVoucherSchema = z
     discountType: z.enum(["PERCENT", "AMOUNT", "SERVICE"]),
     /** Percentual, valor em reais ou nome do serviço, conforme o tipo. */
     discountValue: z.string().trim().min(1, "Informe o valor do desconto"),
+    /** Id do serviço no sistema da Barbearia VIP (quando escolhido da lista). */
+    serviceExternalId: z.string().trim().regex(/^\d*$/, "Id inválido").optional(),
     unitSlug: z.string().trim().min(1, "Escolha a unidade"),
     expiresAt: z.string().trim().optional(), // "aaaa-mm-dd" (input type=date); vazio = +7 dias
     holderName: z.string().trim().max(80).optional(),
@@ -82,6 +84,7 @@ export async function createManualVoucher(raw: ManualVoucherInput, now = new Dat
           kind: "MANUAL",
           ...discount,
           restrictedUnitId: unit.id,
+          serviceExternalId: v.discountType === "SERVICE" && v.serviceExternalId ? Number(v.serviceExternalId) : null,
           holderName: v.holderName || null,
           holderPhone: v.holderPhone ? normalizeBrMobile(v.holderPhone) : null,
           note: v.note || null,
