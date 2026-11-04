@@ -76,6 +76,8 @@ echo 'bvip ALL=(root) NOPASSWD: /bin/systemctl restart barbearia-vip-landing, /b
 cd /var/www/barbearia-vip-landing && sudo -u bvip ./deploy/deploy.sh
 ```
 
+Sempre como `bvip` (dono da pasta): como root, o git recusa com "dubious ownership". Não adicione `safe.directory` para o root; rode com `sudo -u bvip`.
+
 ## Checagens pós-deploy
 
 - `https://indicacao.barbeariavip.com.br/` carrega; `/i/<slug>` redireciona com cookie; `/balcao/<slug>` aceita o PIN.
