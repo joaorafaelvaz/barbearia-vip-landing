@@ -48,7 +48,8 @@ sudo -u bvip cp .env.example .env && sudo -u bvip nano .env
 sudo -u bvip bash -c 'npm ci && npx prisma migrate deploy && npm run build && cp -r public .next/standalone/public && cp -r .next/static .next/standalone/.next/static'
 
 # 5. unidades e influencers
-sudo -u bvip npm run unit:import -- docs/data/unidades.csv      # gera ../unidades-pins-<data>.csv: entregar às recepções e APAGAR
+sudo -u bvip npm run unit:import -- docs/data/unidades.csv      # gera /home/bvip/unidades-pins-<data>.csv: entregar às recepções e APAGAR
+#   (perdeu o arquivo? rode de novo com --reset-pins para gerar PINs novos)
 sudo -u bvip npm run influencer:add -- --slug <slug> --name "<nome>" --handle @<handle> --platform instagram
 
 # 6. serviço

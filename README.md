@@ -32,7 +32,7 @@ Comandos úteis:
 | `npm test` | Testes unitários e de integração (usa `DATABASE_URL_TEST`; aplica migrations sozinho) |
 | `npm run test:e2e` | Playwright contra `npm run dev` |
 | `npm run typecheck` / `npm run lint` | TypeScript e ESLint |
-| `npm run unit:import -- docs/data/unidades.csv` | Importa/atualiza unidades; gera PIN por unidade nova e grava em `../unidades-pins-<data>.csv` (fora do repo; apague após entregar) |
+| `npm run unit:import -- docs/data/unidades.csv` | Importa/atualiza unidades; gera PIN por unidade nova e grava em `~/unidades-pins-<data>.csv` (fora do repo; apague após entregar; `--reset-pins` regenera todos) |
 | `npm run unit:rotate-pin -- --slug <slug>` | Troca o PIN de uma unidade |
 | `npm run influencer:add -- --slug joaobarber --name "João" --handle @joaobarber --platform instagram` | Cadastra um influencer e imprime o link `/i/<slug>` |
 | `npm run db:studio` | Prisma Studio |

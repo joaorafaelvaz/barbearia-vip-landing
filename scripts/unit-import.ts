@@ -6,10 +6,12 @@
  * - Unidade nova: gera PIN aleatório de 6 dígitos, grava só o hash, e escreve o PIN no arquivo de saída.
  * - Unidade existente (mesmo unidade_id): atualiza os dados cadastrais e MANTÉM o PIN, salvo --reset-pins.
  * - Coluna `ativo` do CSV (sim/nao) define unidades inativas; --inactive é um complemento pontual.
- * - O arquivo de PINs vai por padrão para ../unidades-pins-<data>.csv (FORA do repositório). Apague após entregar às recepções.
+ * - O arquivo de PINs vai por padrão para ~/unidades-pins-<data>.csv (FORA do repositório). Apague após entregar às recepções.
+ * - O arquivo é aberto ANTES de qualquer gravação no banco: se não der para escrevê-lo, nada é alterado.
  */
 import "dotenv/config";
-import { writeFileSync } from "node:fs";
+import { closeSync, openSync, writeFileSync, writeSync } from "node:fs";
+import { homedir } from "node:os";
 import { resolve } from "node:path";
 import { prisma } from "../src/lib/db";
 import { hashPin } from "../src/lib/unit-auth";
@@ -23,10 +25,21 @@ async function main() {
   const resetPins = flags["reset-pins"] === true;
   const inactive = new Set(String(flags.inactive ?? "").split(",").map((s) => s.trim()).filter(Boolean));
   const date = new Date().toISOString().slice(0, 10);
-  const pinsOut = resolve(typeof flags["pins-out"] === "string" ? flags["pins-out"] : `../unidades-pins-${date}.csv`);
+  const pinsOut = resolve(typeof flags["pins-out"] === "string" ? flags["pins-out"] : `${homedir()}/unidades-pins-${date}.csv`);
 
   const units = readUnitsCsv(file);
   console.log(`${units.length} unidades no CSV${dryRun ? " (dry-run, nada será gravado)" : ""}`);
+
+  // Abre o arquivo de PINs antes de tocar no banco: se falhar (permissão, pasta inexistente), aborta sem alterar nada.
+  let pinsFd: number | null = null;
+  if (!dryRun) {
+    try {
+      pinsFd = openSync(pinsOut, "w", 0o600);
+      writeSync(pinsFd, "slug,unidade_id,nome,pin\n");
+    } catch (e) {
+      throw new Error(`não foi possível criar o arquivo de PINs em ${pinsOut} (${(e as Error).message}). Use --pins-out <caminho gravável>.`);
+    }
+  }
 
   const pins: string[] = ["slug,unidade_id,nome,pin"];
   let created = 0, updated = 0;
@@ -45,13 +58,20 @@ async function main() {
       else await prisma.unit.create({ data: { ...data, externalId: u.externalId, pinHash: data.pinHash! } });
     }
     if (existing) updated++; else created++;
-    if (pin) pins.push(`${u.slug},${u.externalId},"${u.name.replace(/"/g, '""')}",${pin}`);
+    if (pin) {
+      const line = `${u.slug},${u.externalId},"${u.name.replace(/"/g, '""')}",${pin}`;
+      pins.push(line);
+      if (pinsFd !== null) writeSync(pinsFd, line + "\n"); // grava na hora: se o processo cair no meio, os PINs já emitidos não se perdem
+    }
     console.log(`${existing ? "atualizada" : "criada   "}  ${String(u.externalId).padStart(3)}  ${u.slug}${data.active ? "" : "  [INATIVA]"}${pin ? "  (PIN novo)" : ""}`);
   }
   console.log(`\ncriadas: ${created}, atualizadas: ${updated}`);
+  if (pinsFd !== null) closeSync(pinsFd);
   if (pins.length > 1 && !dryRun) {
-    writeFileSync(pinsOut, pins.join("\n") + "\n", { mode: 0o600 });
     console.log(`\nPINs gravados em ${pinsOut}\nEntregue a cada recepção o seu PIN e APAGUE este arquivo em seguida.`);
+  } else if (!dryRun) {
+    writeFileSync(pinsOut, ""); // nenhum PIN novo: deixa o arquivo vazio para não confundir
+    console.log(`\nNenhum PIN novo (unidades já existiam). Use --reset-pins para gerar todos de novo.`);
   } else if (pins.length > 1) {
     console.log(`\n(dry-run) ${pins.length - 1} PINs seriam gerados.`);
   }
