@@ -11,9 +11,16 @@ export const dynamic = "force-dynamic";
  * Registra o clique, grava o cookie de atribuição (first-touch: só se ainda não existir)
  * e redireciona para a landing com ref + UTM.
  */
+/** Origem pública do site. Atrás do nginx, request.url traz o host interno (localhost:3100); por isso preferimos NEXT_PUBLIC_SITE_URL. */
+function publicOrigin(request: NextRequest): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  return configured && /^https?:\/\//.test(configured) ? configured : request.nextUrl.origin;
+}
+
 export async function GET(request: NextRequest, ctx: { params: Promise<{ slug: string }> }) {
   const { slug } = await ctx.params;
-  const home = new URL("/", request.url);
+  const origin = publicOrigin(request);
+  const home = new URL("/", origin);
 
   if (!isValidSlug(slug)) return NextResponse.redirect(home, 302);
 
@@ -38,7 +45,7 @@ export async function GET(request: NextRequest, ctx: { params: Promise<{ slug: s
     console.error("click: falha ao registrar", e instanceof Error ? e.message : e);
   }
 
-  const res = NextResponse.redirect(new URL(buildLandingUrl(influencer.slug, request.nextUrl.searchParams), request.url), 302);
+  const res = NextResponse.redirect(new URL(buildLandingUrl(influencer.slug, request.nextUrl.searchParams), origin), 302);
   if (!request.cookies.get(REF_COOKIE)) {
     res.cookies.set(REF_COOKIE, influencer.slug, {
       httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production",
